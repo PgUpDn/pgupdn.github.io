@@ -35,7 +35,9 @@
         <nav id="site-nav" class="site-nav" aria-label="Main navigation">
           <a href="/#about">about</a>
           <a class="current" href="/blog/">blog</a>
+          <a href="/#focus">focus</a>
           <a href="/#work">selected work</a>
+          <a href="/#notes">notes</a>
           <a href="/#contact">contact</a>
         </nav>
       </div>
@@ -84,6 +86,18 @@
             interaction, what is the best way to inject that bias into a
             Transformer?
           </p>
+          <figure class="essay-figure">
+            <img
+              src="/assets/blog/drawing-auxiliary-lines/ppt-images/image2.png"
+              alt="A slide contrasting Keplerian curve fitting with Newtonian mechanistic understanding in long-context orbital prediction."
+            />
+            <figcaption>
+              The project starts from a mismatch between performance and
+              mechanism: low prediction error does not guarantee that the model's
+              hidden representation has organized itself around the right
+              physical law.
+            </figcaption>
+          </figure>
         </section>
 
         <div class="essay-separator">* * *</div>
@@ -106,6 +120,18 @@
             context length 100 lands at <strong>-0.273</strong>, which is already a
             strong hint that the model prefers geometric description over force.
           </p>
+          <figure class="essay-figure">
+            <img
+              src="/assets/blog/drawing-auxiliary-lines/ppt-images/image5.png"
+              alt="A chart showing that longer context pushes the model from Newtonian structure toward Keplerian geometry."
+              loading="lazy"
+            />
+            <figcaption>
+              A context-length sweep makes the failure mode visible: once the
+              window grows long enough, the representation drifts away from
+              force and toward orbital geometry.
+            </figcaption>
+          </figure>
         </section>
 
         <div class="essay-separator">* * *</div>
@@ -124,6 +150,18 @@
             The question is not whether that information exists. The question is how
             visible it becomes to the Transformer.
           </p>
+          <figure class="essay-figure">
+            <img
+              src="/assets/blog/drawing-auxiliary-lines/ppt-images/image11.png"
+              alt="A slide presenting the auxiliary-line idea as revealing hidden Newtonian structure through GNN input enrichment."
+              loading="lazy"
+            />
+            <figcaption>
+              The auxiliary-line metaphor is literal here: the GNN does not
+              change the underlying physics, it changes how much of the latent
+              structure the Transformer can see from the start.
+            </figcaption>
+          </figure>
         </section>
 
         <div class="essay-separator">* * *</div>
@@ -163,6 +201,18 @@
             while input enrichment makes it part of the representation from the
             first layer onward.
           </p>
+          <figure class="essay-figure">
+            <img
+              src="/assets/blog/drawing-auxiliary-lines/ppt-images/image8.png"
+              alt="A comparison of three strategies for integrating a GNN with a Transformer: cross-attention, physics-informed output, and input enrichment."
+              loading="lazy"
+            />
+            <figcaption>
+              The three design choices are the heart of the experiment: attach
+              physics as an optional side channel, impose it only at the output,
+              or weave it directly into the token representation.
+            </figcaption>
+          </figure>
         </section>
 
         <div class="essay-separator">* * *</div>
@@ -194,6 +244,18 @@
             the only strategy that materially changed what the representation cared
             about.
           </p>
+          <figure class="essay-figure">
+            <img
+              src="/assets/blog/drawing-auxiliary-lines/ppt-images/image12.png"
+              alt="A result slide showing that auxiliary-line input enrichment shifts the model back toward Newtonian structure."
+              loading="lazy"
+            />
+            <figcaption>
+              This is the main empirical shift: once the GNN embedding is folded
+              into the input, the model stops behaving like a pure ellipse
+              fitter and moves back toward a force-aware representation.
+            </figcaption>
+          </figure>
         </section>
 
         <div class="essay-separator">* * *</div>
@@ -235,6 +297,18 @@
             That is the whole point of the auxiliary-line metaphor: once the line is
             drawn, the rest of the proof changes.
           </p>
+          <figure class="essay-figure">
+            <img
+              src="/assets/blog/drawing-auxiliary-lines/ppt-images/image13.png"
+              alt="A slide explaining that input enrichment makes the hidden relational structure impossible for the Transformer to ignore."
+              loading="lazy"
+            />
+            <figcaption>
+              Input enrichment worked because it made the relational cue
+              structurally unavoidable. The model could still optimize, but it
+              now optimized over a better view of the problem.
+            </figcaption>
+          </figure>
         </section>
 
         <div class="essay-separator">* * *</div>
@@ -294,8 +368,7 @@
     <footer class="site-footer">
       <div class="container footer-shell">
         <p>
-          <span id="year"></span> Xinyu Yang. Built for GitHub Pages with plain
-          HTML, CSS, and JavaScript.
+          &copy; <span id="year"></span> Xinyu Yang. Built with GitHub Pages.
         </p>
       </div>
     </footer>
