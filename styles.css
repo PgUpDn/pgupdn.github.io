@@ -346,6 +346,14 @@ h1 span {
   max-width: none;
 }
 
+.wide-heading {
+  max-width: none;
+}
+
+.wide-heading p {
+  max-width: none;
+}
+
 .card-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
