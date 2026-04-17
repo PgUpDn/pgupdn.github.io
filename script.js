@@ -21,7 +21,11 @@ if (navToggle && siteNav) {
   });
 }
 
-const sections = navLinks
+const sectionLinks = navLinks.filter((link) =>
+  link.getAttribute("href")?.startsWith("#")
+);
+
+const sections = sectionLinks
   .map((link) => document.querySelector(link.getAttribute("href")))
   .filter(Boolean);
 
@@ -33,7 +37,7 @@ const observer = new IntersectionObserver(
       }
 
       const id = `#${entry.target.id}`;
-      navLinks.forEach((link) => {
+      sectionLinks.forEach((link) => {
         const isActive = link.getAttribute("href") === id;
         link.classList.toggle("active", isActive);
       });

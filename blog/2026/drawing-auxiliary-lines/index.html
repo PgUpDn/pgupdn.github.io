@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      Drawing Auxiliary Lines: When GNN Input Enrichment Helps Transformers
+      Discover Newton | Xinyu Yang
+    </title>
+    <meta
+      name="description"
+      content="A tech blog by Xinyu Yang on why GNN input enrichment worked better than cross-attention or output constraints for Newtonian discovery in long-context Transformers."
+    />
+    <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container nav-shell">
+        <a class="brand" href="/" aria-label="Go to the home page">XY</a>
+        <button
+          class="nav-toggle"
+          type="button"
+          aria-expanded="false"
+          aria-controls="site-nav"
+        >
+          Menu
+        </button>
+        <nav id="site-nav" class="site-nav" aria-label="Main navigation">
+          <a href="/#about">about</a>
+          <a class="current" href="/blog/">blog</a>
+          <a href="/#work">selected work</a>
+          <a href="/#contact">contact</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="post-page">
+      <article class="post-layout">
+        <header class="post-header-card">
+          <p class="eyebrow">Tech blog</p>
+          <h1 class="post-title">
+            Drawing Auxiliary Lines: When GNN Input Enrichment Helps Transformers
+            Discover Newton
+          </h1>
+          <div class="post-meta">
+            <span>Created on April 17, 2026</span>
+            <span>Author: Xinyu Yang</span>
+          </div>
+          <div class="post-tags">
+            <span>AI</span>
+            <span>Transformers</span>
+            <span>Graph Neural Networks</span>
+            <span>Inductive Bias</span>
+            <span>World Models</span>
+          </div>
+          <p class="post-lede">
+            Long-context Transformers trained on orbital trajectories often drift
+            toward Keplerian curve fitting instead of Newtonian force reasoning.
+            In this work, I tested three ways of injecting a GNN inductive bias and
+            found that the simplest one, adding the GNN embedding directly to the
+            input token, worked far better than cross-attention or output-side
+            constraints.
+          </p>
+        </header>
+
+        <div class="post-content">
+          <section class="post-callout">
+            <p class="callout-title">TL;DR</p>
+            <p>
+              Cross-attention left the GNN optional, so the Transformer ignored it.
+              Output constraints only delivered marginal gains. Input enrichment,
+              which I describe as drawing an auxiliary line, reduced the magnitude
+              of the Keplerian bias by 58% and sharply improved Newtonian probe
+              scores.
+            </p>
+          </section>
+
+          <div class="post-divider">***</div>
+
+          <section class="post-section">
+            <h2>The Puzzle</h2>
+            <p>
+              A recent result from Liu et al. showed a striking phase transition in
+              orbital world models: with short context, Transformers learn features
+              aligned with Newtonian force; with long context, they default to
+              Keplerian geometric descriptions. In historical terms, the model stops
+              seeking laws and starts curve fitting.
+            </p>
+            <p>
+              That raises a simple question: if we already know the underlying
+              physics depends on pairwise interaction, can we inject that structure
+              into the model without completely redesigning the Transformer?
+            </p>
+            <div class="equation-card">
+              <p>
+                ΔN = average Newtonian probe score − average Keplerian probe score
+              </p>
+            </div>
+            <p>
+              In the manuscript, negative values of ΔN mean the representation is
+              more Keplerian than Newtonian. The baseline model at context length
+              100 sits at <strong>-0.273</strong>, which is a clear bias toward
+              Kepler-style structure.
+            </p>
+          </section>
+
+          <div class="post-divider">***</div>
+
+          <section class="post-section">
+            <h2>The Core Idea: Draw an Auxiliary Line</h2>
+            <p>
+              In geometry, an auxiliary line does not add new truth to a problem.
+              It makes an existing structure visible. That is the metaphor I use for
+              the GNN in this project.
+            </p>
+            <p>
+              A GNN operating over the sun and planet nodes naturally performs the
+              kind of message passing that exposes pairwise interaction. Instead of
+              asking the Transformer to discover both the existence of that
+              interaction and the law that governs it, we can let the GNN precompute
+              a structured view and inject that view into the sequence model.
+            </p>
+          </section>
+
+          <div class="post-divider">***</div>
+
+          <section class="post-section">
+            <h2>Three Integration Strategies</h2>
+            <div class="compare-grid">
+              <article class="compare-card bad">
+                <h3>S1. Cross-attention</h3>
+                <p>
+                  A frozen GNN acts as a side channel. The Transformer can consult it
+                  through gated cross-attention after each block.
+                </p>
+              </article>
+              <article class="compare-card">
+                <h3>S2. Physics-informed output</h3>
+                <p>
+                  The output head is routed through a force bottleneck and a learned
+                  dynamics pathway, encouraging the model to use acceleration-like
+                  structure.
+                </p>
+              </article>
+              <article class="compare-card good">
+                <h3>S3. Auxiliary line</h3>
+                <p>
+                  The GNN embedding is added directly to the input token embedding,
+                  so it participates in every Q, K, and V computation from layer 0.
+                </p>
+              </article>
+            </div>
+            <p>
+              The difference is subtle but decisive. In S1 the GNN remains optional.
+              In S3 it becomes part of the representation itself.
+            </p>
+          </section>
+
+          <div class="post-divider">***</div>
+
+          <section class="post-section">
+            <h2>What the Experiments Showed</h2>
+            <div class="metric-grid">
+              <article class="metric-card">
+                <div class="metric-value">58%</div>
+                <p class="metric-label">reduction in |ΔN| for the best auxiliary-line model</p>
+              </article>
+              <article class="metric-card">
+                <div class="metric-value">0.86</div>
+                <p class="metric-label">Fx probe score after input enrichment</p>
+              </article>
+              <article class="metric-card">
+                <div class="metric-value">0.88</div>
+                <p class="metric-label">Fy probe score after input enrichment</p>
+              </article>
+              <article class="metric-card">
+                <div class="metric-value">-0.115</div>
+                <p class="metric-label">best final ΔN, improved from the baseline at -0.273</p>
+              </article>
+            </div>
+
+            <div class="post-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Strategy</th>
+                    <th>Best variant</th>
+                    <th>Result</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Cross-attention</td>
+                    <td>S1-2n without gate</td>
+                    <td>
+                      Still ended at ΔN = -0.308. Other variants were even worse and
+                      often pushed the model deeper into Keplerian behavior.
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>Physics-informed output</td>
+                    <td>S2-rad</td>
+                    <td>
+                      Improved only marginally to around -0.239 to -0.249. Enough to
+                      help, not enough to change the underlying preference.
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>Auxiliary line</td>
+                    <td>S3-full</td>
+                    <td>
+                      Reached ΔN = -0.115, while Newtonian probes jumped sharply and
+                      Keplerian probes compressed.
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <div class="post-divider">***</div>
+
+          <section class="post-section">
+            <h2>Why Cross-attention Failed</h2>
+            <p>
+              The baseline Transformer already has a low-loss shortcut: fit the
+              long trajectory geometrically. Once that path is available, a gated
+              cross-attention branch has no reason to stay open. The GNN becomes easy
+              to ignore.
+            </p>
+            <p>
+              In the paper draft, this showed up directly in the numbers. Gated
+              cross-attention made ΔN worse, and even the better ungated variant
+              stayed close to baseline performance. The extra structure was present,
+              but it never became foundational to the representation.
+            </p>
+          </section>
+
+          <div class="post-divider">***</div>
+
+          <section class="post-section">
+            <h2>Why Input Enrichment Worked</h2>
+            <ol>
+              <li>
+                The GNN signal is fused into the token before the first attention
+                layer, so there is no clean way for the Transformer to discard it.
+              </li>
+              <li>
+                Message passing already expresses the core inductive bias: force comes
+                from interaction between entities, not from isolated coordinate
+                history.
+              </li>
+              <li>
+                The richer 128-dimensional GNN embedding outperformed the bottleneck
+                version, which suggests the model benefits from a diverse relational
+                representation rather than a single scalar hint.
+              </li>
+            </ol>
+            <p>
+              The broader lesson is that useful inductive bias may be less about
+              forcing the model into a narrow pipeline and more about enriching what
+              the model gets to see from the start.
+            </p>
+          </section>
+
+          <div class="post-divider">***</div>
+
+          <section class="post-section">
+            <h2>What I Take Away From This</h2>
+            <p>
+              For scientific machine learning, representation engineering can matter
+              more than architectural policing. If the right structure is exposed
+              early enough, the model does not need to rediscover it from scratch.
+            </p>
+            <p>
+              That is why the auxiliary-line metaphor feels useful to me. The GNN is
+              not solving the physics problem on behalf of the Transformer. It is
+              simply drawing the line that makes the proof easier to see.
+            </p>
+          </section>
+
+          <div class="post-divider">***</div>
+
+          <section class="citation-card">
+            <p class="callout-title">Source Note</p>
+            <p>
+              This blog post is adapted from my manuscript
+              <strong>
+                Drawing Auxiliary Lines: Graph Neural Networks as Input Enrichment
+                for Newtonian Discovery in Transformers
+              </strong>
+              from the local draft in <code>main.tex</code>.
+            </p>
+            <code>@article{yang2026drawingauxiliarylines,
+  title={Drawing Auxiliary Lines: Graph Neural Networks as Input Enrichment for Newtonian Discovery in Transformers},
+  author={Yang, Xinyu},
+  year={2026}
+}</code>
+          </section>
+
+          <section class="read-next" style="margin-top: 2rem">
+            <p class="callout-title">Read Next</p>
+            <ul>
+              <li><a href="/blog/">Back to the blog index</a></li>
+              <li><a href="/">Return to the homepage</a></li>
+              <li><a href="https://pgupdn.github.io/urban-cooling-agent/">Explore Urban Cooling Agent</a></li>
+            </ul>
+          </section>
+        </div>
+      </article>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container footer-shell">
+        <p>
+          <span id="year"></span> Xinyu Yang. Built for GitHub Pages with plain
+          HTML, CSS, and JavaScript.
+        </p>
+      </div>
+    </footer>
+
+    <script src="/script.js"></script>
+  </body>
+</html>
