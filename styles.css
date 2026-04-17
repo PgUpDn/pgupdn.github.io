@@ -219,25 +219,6 @@ h1 span {
   line-height: 1.45;
 }
 
-.hero-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.65rem;
-  margin-top: 1rem;
-}
-
-.hero-tags span {
-  display: inline-flex;
-  align-items: center;
-  min-height: 2rem;
-  padding: 0.38rem 0.78rem;
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.5);
-  color: var(--text);
-  font-size: 0.92rem;
-}
-
 .intro-copy p,
 .section-heading p,
 .info-card p,
