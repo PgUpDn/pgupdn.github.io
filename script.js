@@ -50,3 +50,44 @@ const observer = new IntersectionObserver(
 );
 
 sections.forEach((section) => observer.observe(section));
+
+const emailLinks = [...document.querySelectorAll("[data-email-link]")];
+
+const flashEmailFeedback = (node) => {
+  if (!node.classList.contains("button")) {
+    return;
+  }
+
+  const originalLabel = node.dataset.originalLabel || node.textContent.trim();
+  node.dataset.originalLabel = originalLabel;
+  node.textContent = "Email copied";
+  node.classList.add("email-feedback");
+
+  window.setTimeout(() => {
+    node.textContent = originalLabel;
+    node.classList.remove("email-feedback");
+  }, 1800);
+};
+
+emailLinks.forEach((link) => {
+  link.addEventListener("click", async (event) => {
+    event.preventDefault();
+
+    const emailAddress =
+      link.dataset.emailAddress || link.getAttribute("href")?.replace("mailto:", "");
+    const mailtoHref = link.getAttribute("href");
+
+    if (emailAddress && navigator.clipboard?.writeText) {
+      try {
+        await navigator.clipboard.writeText(emailAddress);
+        flashEmailFeedback(link);
+      } catch (error) {
+        // Ignore clipboard failures and continue with the mailto fallback.
+      }
+    }
+
+    if (mailtoHref) {
+      window.location.href = mailtoHref;
+    }
+  });
+});

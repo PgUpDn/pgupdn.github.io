@@ -269,6 +269,11 @@ h1 span {
   border-color: rgba(15, 118, 110, 0.32);
 }
 
+.button.email-feedback {
+  border-color: rgba(15, 118, 110, 0.34);
+  color: var(--accent-strong);
+}
+
 .profile-card,
 .info-card,
 .project-card,
