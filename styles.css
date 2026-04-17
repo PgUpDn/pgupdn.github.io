@@ -428,273 +428,189 @@ h1 span {
 }
 
 .post-page {
-  padding: 3.25rem 0 5rem;
+  padding: 3rem 0 5rem;
 }
 
-.post-layout {
-  width: min(860px, calc(100vw - 2rem));
+.essay-layout {
+  width: min(780px, calc(100vw - 2rem));
   margin: 0 auto;
 }
 
-.post-header-card,
-.blog-item,
-.post-callout,
-.metric-card,
-.compare-card,
-.equation-card,
-.citation-card,
-.read-next {
-  border: 1px solid rgba(255, 255, 255, 0.64);
-  border-radius: var(--radius-lg);
-  background: var(--surface);
-  box-shadow: var(--shadow);
-  backdrop-filter: blur(18px);
+.essay-directory-header {
+  padding-top: 1.25rem;
 }
 
-.post-header-card {
-  padding: 2rem;
-}
-
-.post-title {
-  margin-top: 0.7rem;
-  font-size: clamp(2.4rem, 6vw, 4.25rem);
+.essay-directory-title,
+.essay-title {
+  font-size: clamp(2.35rem, 6vw, 3.9rem);
   letter-spacing: -0.045em;
 }
 
-.post-meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.8rem 1.1rem;
-  margin-top: 1rem;
+.essay-directory-copy {
+  margin: 0.9rem 0 0;
+  max-width: 40rem;
   color: var(--muted);
-  font-size: 0.97rem;
+  font-size: 1.05rem;
 }
 
-.post-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.65rem;
-  margin-top: 1.1rem;
+.blog-list {
+  margin-top: 2rem;
+  border-top: 1px solid var(--line);
 }
 
-.post-tags span {
-  padding: 0.45rem 0.8rem;
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.58);
-  color: var(--muted);
-  font-size: 0.88rem;
-}
-
-.post-lede {
-  margin-top: 1.4rem;
-  font-size: 1.1rem;
-  color: var(--muted);
-}
-
-.post-content {
-  padding-top: 2.2rem;
-}
-
-.post-divider {
-  margin: 2.2rem 0;
-  text-align: center;
-  letter-spacing: 0.4em;
-  color: rgba(30, 29, 26, 0.34);
-}
-
-.post-section {
+.blog-list-item {
   display: grid;
-  gap: 1rem;
+  grid-template-columns: 8.5rem minmax(0, 1fr);
+  gap: 1.35rem;
+  padding: 1.2rem 0;
+  border-bottom: 1px solid var(--line);
 }
 
-.post-section + .post-section {
-  margin-top: 2.2rem;
+.blog-list-date {
+  color: var(--text);
+  font-size: 0.92rem;
+  font-weight: 600;
 }
 
-.post-section h2 {
-  font-size: clamp(1.7rem, 4vw, 2.35rem);
+.blog-list-body h2 {
+  font-size: 1.55rem;
   letter-spacing: -0.03em;
 }
 
-.post-content p,
-.post-content li,
-.post-content td,
-.post-content th,
-.post-content blockquote {
+.blog-list-body p {
+  margin: 0.6rem 0 0;
   color: var(--muted);
 }
 
-.post-content strong {
-  color: var(--text);
+.blog-list-body a,
+.essay-section a,
+.essay-taxonomy a {
+  color: var(--accent-strong);
 }
 
-.post-content ul,
-.post-content ol {
-  margin: 0;
-  padding-left: 1.25rem;
-  display: grid;
-  gap: 0.7rem;
+.essay-header {
+  padding-top: 1.25rem;
 }
 
-.post-callout,
-.equation-card,
-.citation-card,
-.read-next,
-.blog-item {
-  padding: 1.4rem 1.5rem;
-}
-
-.post-callout p,
-.equation-card p,
-.citation-card p,
-.read-next p,
-.blog-item p,
-.blog-item time {
-  margin: 0;
-}
-
-.callout-title,
-.blog-item-title {
-  margin-bottom: 0.55rem;
-  font-family: "Fraunces", serif;
-  font-size: 1.35rem;
-  color: var(--text);
-}
-
-.metric-grid,
-.compare-grid,
-.blog-grid {
-  display: grid;
-  gap: 1rem;
-}
-
-.metric-grid {
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-}
-
-.metric-card {
-  padding: 1.2rem;
-}
-
-.metric-value {
-  font-family: "Fraunces", serif;
-  font-size: 2rem;
-  line-height: 1;
-  color: var(--text);
-}
-
-.metric-label {
-  margin-top: 0.55rem;
+.essay-date,
+.essay-taxonomy,
+.essay-author {
+  margin: 0.7rem 0 0;
   color: var(--muted);
-  font-size: 0.92rem;
 }
 
-.compare-grid {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+.essay-taxonomy {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem 0.75rem;
+  align-items: center;
 }
 
-.compare-card {
-  padding: 1.2rem;
+.essay-separator {
+  margin: 1.8rem 0 1.45rem;
+  color: rgba(30, 29, 26, 0.34);
+  letter-spacing: 0.35em;
 }
 
-.compare-card h3 {
-  font-size: 1.25rem;
+.essay-section {
+  display: grid;
+  gap: 0.95rem;
 }
 
-.compare-card p {
-  margin: 0.75rem 0 0;
+.essay-section h2 {
+  font-size: clamp(1.45rem, 4vw, 2rem);
+  letter-spacing: -0.03em;
 }
 
-.compare-card.bad {
-  border-color: rgba(168, 90, 48, 0.25);
+.essay-section p,
+.essay-section li,
+.essay-section td,
+.essay-section th {
+  margin: 0;
+  color: var(--muted);
 }
 
-.compare-card.good {
-  border-color: rgba(15, 118, 110, 0.28);
-  background: rgba(244, 252, 250, 0.92);
-}
-
-.equation-card {
-  font-family: "Fraunces", serif;
-  font-size: 1.15rem;
+.essay-section strong {
   color: var(--text);
 }
 
-.post-table {
+.essay-section ul,
+.essay-section ol {
+  margin: 0;
+  padding-left: 1.2rem;
+  display: grid;
+  gap: 0.65rem;
+}
+
+.essay-note {
+  padding: 1rem 1.15rem;
+  border-left: 3px solid var(--accent);
+  background: rgba(15, 118, 110, 0.07);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+
+.essay-table {
   overflow-x: auto;
 }
 
-.post-table table {
+.essay-table table {
   width: 100%;
   border-collapse: collapse;
 }
 
-.post-table th,
-.post-table td {
-  padding: 0.9rem 0.75rem;
+.essay-table th,
+.essay-table td {
+  padding: 0.85rem 0.7rem;
   border-bottom: 1px solid var(--line);
   text-align: left;
   vertical-align: top;
 }
 
-.post-table th {
+.essay-table th {
   color: var(--text);
   font-weight: 600;
 }
 
-.post-table tr:last-child td {
-  border-bottom: 0;
+.essay-stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.9rem;
+  margin-bottom: 0.4rem;
 }
 
-.citation-card code {
-  display: block;
-  margin-top: 0.9rem;
-  padding: 1rem;
+.essay-stat {
+  padding: 1rem 0.9rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.45);
+}
+
+.essay-stat-value {
+  font-family: "Fraunces", serif;
+  font-size: 1.9rem;
+  line-height: 1;
+  color: var(--text);
+}
+
+.essay-stat p {
+  margin-top: 0.55rem;
+  font-size: 0.92rem;
+}
+
+.essay-bibtex {
+  margin-top: 0.45rem;
+}
+
+.essay-bibtex pre {
+  margin: 0;
+  padding: 1rem 1.05rem;
+  overflow-x: auto;
   border-radius: var(--radius-md);
   background: rgba(30, 29, 26, 0.06);
+  color: var(--muted);
   font-family: "IBM Plex Sans", sans-serif;
   font-size: 0.92rem;
-  line-height: 1.6;
-  white-space: pre-wrap;
-}
-
-.read-next ul {
-  margin-top: 0.85rem;
-}
-
-.read-next a,
-.blog-item a {
-  color: var(--accent-strong);
-  font-weight: 600;
-}
-
-.blog-hero {
-  margin-bottom: 2rem;
-}
-
-.blog-hero h1 {
-  font-size: clamp(2.7rem, 6vw, 4.5rem);
-}
-
-.blog-hero p {
-  margin: 1rem 0 0;
-  max-width: 42rem;
-  color: var(--muted);
-  font-size: 1.08rem;
-}
-
-.blog-grid {
-  grid-template-columns: 1fr;
-}
-
-.blog-item time {
-  display: block;
-  margin-bottom: 0.7rem;
-  color: var(--accent);
-  font-size: 0.84rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  line-height: 1.65;
 }
 
 @media (max-width: 960px) {
@@ -711,8 +627,7 @@ h1 span {
     grid-template-columns: 1fr;
   }
 
-  .metric-grid,
-  .compare-grid {
+  .essay-stats {
     grid-template-columns: 1fr;
   }
 }
@@ -764,7 +679,8 @@ h1 span {
     min-height: 0.75rem;
   }
 
-  .note-row {
+  .note-row,
+  .blog-list-item {
     grid-template-columns: 1fr;
     gap: 0.35rem;
   }
