@@ -17,7 +17,7 @@
     />
     <link rel="stylesheet" href="/styles.css" />
   </head>
-  <body>
+  <body class="blog-page-body">
     <header class="site-header">
       <div class="container nav-shell">
         <a class="brand" href="/" aria-label="Go to the home page">XY</a>
@@ -40,34 +40,36 @@
     </header>
 
     <main class="post-page">
-      <div class="essay-layout">
-        <header class="essay-directory-header">
-          <h1 class="essay-directory-title">Blog</h1>
-          <p class="essay-directory-copy">
-            Technical notes, project writeups, and research-facing essays adapted
-            from my ongoing work.
-          </p>
-        </header>
+      <div class="container">
+        <div class="essay-layout">
+          <header class="essay-directory-header">
+            <h1 class="essay-directory-title">Blog</h1>
+            <p class="essay-directory-copy">
+              Technical notes, project writeups, and research-facing essays adapted
+              from my ongoing work.
+            </p>
+          </header>
 
-        <section class="blog-list">
-          <article class="blog-list-item">
-            <time class="blog-list-date" datetime="2026-04-17">Apr 17, 2026</time>
-            <div class="blog-list-body">
-              <h2>
-                <a href="/blog/2026/drawing-auxiliary-lines/">
-                  Drawing Auxiliary Lines: When GNN Input Enrichment Helps
-                  Transformers Discover Newton
-                </a>
-              </h2>
-              <p>
-                A technical blog adaptation of my manuscript on why input
-                enrichment worked better than cross-attention or output-side
-                constraints for Newtonian discovery in long-context
-                Transformers.
-              </p>
-            </div>
-          </article>
-        </section>
+          <section class="blog-list">
+            <article class="blog-list-item">
+              <time class="blog-list-date" datetime="2026-04-17">Apr 17, 2026</time>
+              <div class="blog-list-body">
+                <h2>
+                  <a href="/blog/2026/drawing-auxiliary-lines/">
+                    Drawing Auxiliary Lines: When GNN Input Enrichment Helps
+                    Transformers Discover Newton
+                  </a>
+                </h2>
+                <p>
+                  A technical blog adaptation of my manuscript on why input
+                  enrichment worked better than cross-attention or output-side
+                  constraints for Newtonian discovery in long-context
+                  Transformers.
+                </p>
+              </div>
+            </article>
+          </section>
+        </div>
       </div>
     </main>
 

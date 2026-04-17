@@ -428,16 +428,15 @@ h1 span {
 }
 
 .post-page {
-  padding: 3rem 0 5rem;
+  padding: 2.15rem 0 5rem;
 }
 
 .essay-layout {
-  width: min(780px, calc(100vw - 2rem));
-  margin: 0 auto;
+  max-width: 760px;
 }
 
 .essay-directory-header {
-  padding-top: 1.25rem;
+  padding-top: 0.45rem;
 }
 
 .essay-directory-title,
@@ -454,7 +453,7 @@ h1 span {
 }
 
 .blog-list {
-  margin-top: 2rem;
+  margin-top: 1.7rem;
   border-top: 1px solid var(--line);
 }
 
@@ -477,6 +476,14 @@ h1 span {
   letter-spacing: -0.03em;
 }
 
+.blog-list-body h2 a {
+  color: var(--text);
+}
+
+.blog-list-body h2 a:hover {
+  color: var(--accent-strong);
+}
+
 .blog-list-body p {
   margin: 0.6rem 0 0;
   color: var(--muted);
@@ -489,7 +496,7 @@ h1 span {
 }
 
 .essay-header {
-  padding-top: 1.25rem;
+  padding-top: 0.45rem;
 }
 
 .essay-date,
@@ -504,6 +511,10 @@ h1 span {
   flex-wrap: wrap;
   gap: 0.45rem 0.75rem;
   align-items: center;
+}
+
+.essay-title {
+  max-width: 15ch;
 }
 
 .essay-separator {
