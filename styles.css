@@ -190,6 +190,36 @@ h1 span {
   gap: 1rem;
 }
 
+.hero-details {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.95rem;
+  margin-top: 1.7rem;
+}
+
+.hero-detail {
+  padding: 1rem 1.05rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.46);
+}
+
+.hero-detail-label {
+  margin: 0;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-size: 0.74rem;
+  color: var(--accent);
+}
+
+.hero-detail-value {
+  margin: 0.42rem 0 0;
+  color: var(--text);
+  font-size: 0.98rem;
+  font-weight: 600;
+  line-height: 1.45;
+}
+
 .intro-copy p,
 .section-heading p,
 .info-card p,
@@ -294,6 +324,11 @@ h1 span {
 .profile-meta p {
   margin: 0;
   color: var(--muted);
+}
+
+.profile-meta p:nth-child(2) {
+  color: var(--text);
+  font-weight: 500;
 }
 
 .section {
@@ -708,6 +743,10 @@ h1 span {
   }
 
   .card-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-details {
     grid-template-columns: 1fr;
   }
 
