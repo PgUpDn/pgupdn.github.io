@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      NeCLO: Turning Maxwell Solvers into Differentiable Tensor Programs |
+      Xinyu Yang
+    </title>
+    <meta
+      name="description"
+      content="A tech blog by Xinyu Yang on NeCLO, a differentiable electromagnetics framework that replaces graph overhead with fixed convolutions and tensor slicing while staying bit-exact to FDTD."
+    />
+    <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body class="blog-page-body">
+    <header class="site-header">
+      <div class="container nav-shell">
+        <a class="brand" href="/" aria-label="Go to the home page">XY</a>
+        <button
+          class="nav-toggle"
+          type="button"
+          aria-expanded="false"
+          aria-controls="site-nav"
+        >
+          Menu
+        </button>
+        <nav id="site-nav" class="site-nav" aria-label="Main navigation">
+          <a href="/#about">about</a>
+          <a class="current" href="/blog/">blog</a>
+          <a href="/#focus">focus</a>
+          <a href="/#work">selected work</a>
+          <a href="/#notes">notes</a>
+          <a href="/#contact">contact</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="post-page">
+      <div class="container">
+        <article class="essay-layout">
+          <header class="essay-header">
+            <h1 class="essay-title">
+              NeCLO: Turning Maxwell Solvers into Differentiable Tensor Programs
+            </h1>
+            <p class="essay-date">Created in April 17, 2026</p>
+            <p class="essay-taxonomy">
+              <a href="/blog/">2026</a>
+              <span>&middot;</span>
+              <span>AI for Science</span>
+              <span>&middot;</span>
+              <span>Electromagnetics</span>
+              <span>&middot;</span>
+              <span>Differentiable Solvers</span>
+            </p>
+            <p class="essay-author">Author: Xinyu Yang</p>
+          </header>
+
+          <div class="essay-separator">* * *</div>
+
+          <section class="essay-section">
+            <h2>The Friction</h2>
+            <p>
+              Classical FDTD is still one of the most reliable ways to simulate
+              electromagnetic propagation, but the implementation style we
+              inherit from CPU code is a bad fit for modern differentiable
+              workloads. Deeply nested loops do not scale well, and most neural
+              surrogates accelerate by relaxing physical exactness.
+            </p>
+            <p>
+              The manuscript in the AI4X template folder asks a sharper
+              question: on a regular Yee grid, do we really need a graph at all?
+              Or can we re-express the same Maxwell updates in a form that is
+              more aligned with tensor hardware, while still reproducing the
+              reference solver exactly?
+            </p>
+            <div class="essay-note">
+              <p>
+                <strong>The core claim:</strong> on structured grids,
+                differentiable electromagnetics should behave more like a tensor
+                program than a message-passing system.
+              </p>
+            </div>
+          </section>
+
+          <div class="essay-separator">* * *</div>
+
+          <section class="essay-section">
+            <h2>Why the Graph Baseline Hits a Wall</h2>
+            <p>
+              GEM is a natural baseline because it treats the Yee grid as a
+              directed graph and uses message passing to propagate Maxwell
+              updates. That makes sense if the underlying geometry is irregular.
+              But on a structured grid it introduces avoidable overhead:
+              explicit edges, gather-scatter traffic, and broken memory
+              contiguity.
+            </p>
+            <p>
+              In other words, the graph abstraction is expressive, but here the
+              geometry is already regular. The abstraction adds machinery where
+              the hardware would rather see dense tensor operations.
+            </p>
+            <figure class="essay-figure">
+              <img
+                src="/assets/blog/neclo-differentiable-electromagnetics/gem.png"
+                alt="A graph-message-passing view of structured-grid electromagnetics with gather and scatter operations."
+              />
+              <figcaption>
+                GEM makes the grid explicit as a graph. On irregular meshes that
+                flexibility is useful; on a regular Yee grid it turns local
+                stencil physics into a memory-traffic problem.
+              </figcaption>
+            </figure>
+          </section>
+
+          <div class="essay-separator">* * *</div>
+
+          <section class="essay-section">
+            <h2>Rewriting Maxwell Updates as Kernels</h2>
+            <p>
+              NeCLO takes the opposite view. Instead of lifting the grid into a
+              graph, it keeps the domain as a dense voxel tensor and interprets
+              spatial finite differences as fixed convolution kernels. The curl
+              operator becomes a small collection of pre-defined
+              <code>Conv3d</code> filters.
+            </p>
+            <p>
+              That reframing matters because it is not introducing a neural
+              approximation. It is simply expressing the same local update in a
+              form that optimized tensor libraries and accelerators already know
+              how to execute efficiently.
+            </p>
+            <figure class="essay-figure">
+              <img
+                src="/assets/blog/neclo-differentiable-electromagnetics/neclo-conv.png"
+                alt="Finite-difference stencils rewritten as fixed convolution kernels for NeCLO."
+                loading="lazy"
+              />
+              <figcaption>
+                NeCLO converts staggered-grid finite differences into
+                fixed-weight convolution kernels. The point is not to learn the
+                update rule, but to compile it into an accelerator-friendly
+                tensor form.
+              </figcaption>
+            </figure>
+          </section>
+
+          <div class="essay-separator">* * *</div>
+
+          <section class="essay-section">
+            <h2>The Stronger Claim: Sometimes Convolution Is Still Too Much</h2>
+            <p>
+              The most interesting part of the work is that it does not stop at
+              convolution. If a central difference is really just subtraction
+              between shifted views of the same tensor, then even
+              <code>Conv3d</code> can be seen as an intermediate abstraction.
+            </p>
+            <p>
+              That leads to a pure tensor slicing variant: no graph edges, no
+              learnable operator, and no padding-heavy convolution stack. Just
+              direct view shifts and vectorized subtraction. The paper's key
+              insight is that this version is not merely elegant. It is also the
+              fastest.
+            </p>
+            <figure class="essay-figure">
+              <img
+                src="/assets/blog/neclo-differentiable-electromagnetics/tensor-slicing.png"
+                alt="Tensor slicing as shifted subtraction between views of the same field tensor."
+                loading="lazy"
+              />
+              <figcaption>
+                Pure tensor slicing pushes the structured-grid idea to its
+                logical end: stencil updates become shifted tensor views and raw
+                subtraction, with almost no abstraction left between the physics
+                and the memory layout.
+              </figcaption>
+            </figure>
+          </section>
+
+          <div class="essay-separator">* * *</div>
+
+          <section class="essay-section">
+            <h2>Main Result</h2>
+            <div class="essay-stats">
+              <div class="essay-stat">
+                <div class="essay-stat-value">0.0</div>
+                <p>absolute error for NeCLO and tensor slicing in Float32</p>
+              </div>
+              <div class="essay-stat">
+                <div class="essay-stat-value">82x</div>
+                <p>CPU speedup for NeCLO Conv3d over loop-based FDTD</p>
+              </div>
+              <div class="essay-stat">
+                <div class="essay-stat-value">411x</div>
+                <p>CPU speedup for pure tensor slicing over loop-based FDTD</p>
+              </div>
+              <div class="essay-stat">
+                <div class="essay-stat-value">1e-5</div>
+                <p>final conductivity retrieval error in inversion</p>
+              </div>
+            </div>
+            <div class="essay-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Method</th>
+                    <th>Latency / step</th>
+                    <th>Speedup</th>
+                    <th>Interpretation</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Traditional FDTD</td>
+                    <td>37.0 ms</td>
+                    <td>1x</td>
+                    <td>Reference implementation with explicit loops</td>
+                  </tr>
+                  <tr>
+                    <td>NeCLO Conv3d</td>
+                    <td>0.45 ms</td>
+                    <td>82x</td>
+                    <td>Exact physics in a dense tensor-kernel form</td>
+                  </tr>
+                  <tr>
+                    <td>Tensor Slicing</td>
+                    <td>0.09 ms</td>
+                    <td>411x</td>
+                    <td>Maximum throughput from raw shifted-view arithmetic</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <p>
+              The accuracy result is just as important as the speed result. GEM
+              remains numerically excellent, but NeCLO and the tensor-slicing
+              variant go further: they reproduce the reference updates
+              bit-for-bit in <strong>Float32</strong>. That means this is not a
+              surrogate story. It is an implementation story.
+            </p>
+          </section>
+
+          <div class="essay-separator">* * *</div>
+
+          <section class="essay-section">
+            <h2>Bit-Exactness Changes the Meaning of Acceleration</h2>
+            <p>
+              Most AI-for-science acceleration stories involve a trade: gain
+              speed, lose some amount of physical fidelity, then recover trust by
+              benchmarking carefully. NeCLO is appealing because it sidesteps
+              that trade almost entirely. The update rule is still Maxwell's
+              update rule. Only the computational expression changes.
+            </p>
+            <p>
+              That is why the visual comparisons matter. The field maps are not
+              merely similar in a qualitative sense. They are a consequence of a
+              tensor implementation that remains mathematically equivalent to the
+              classic stencil.
+            </p>
+            <figure class="essay-figure">
+              <img
+                src="/assets/blog/neclo-differentiable-electromagnetics/2d-ez.png"
+                alt="A side-by-side comparison of ground-truth and NeCLO 2D Ez field distributions."
+                loading="lazy"
+              />
+              <figcaption>
+                A 2D field snapshot makes the point visually: NeCLO is not
+                inventing a new field pattern, it is reproducing the reference
+                FDTD evolution while living inside a tensor-native execution
+                model.
+              </figcaption>
+            </figure>
+          </section>
+
+          <div class="essay-separator">* * *</div>
+
+          <section class="essay-section">
+            <h2>Why NeCLO Still Matters Even If Tensor Slicing Is Faster</h2>
+            <p>
+              The fastest forward implementation is not automatically the best
+              training-time implementation. The manuscript makes a useful
+              distinction here: tensor slicing is extremely fast for forward
+              simulation, but its autograd graph becomes fragmented and
+              memory-bandwidth-bound during learning.
+            </p>
+            <ol>
+              <li>
+                Tensor slicing minimizes arithmetic overhead, but that same
+                low-level view-shift structure is not ideal for backpropagation.
+              </li>
+              <li>
+                NeCLO can still exploit highly optimized tensor kernels,
+                including hardware paths that favor dense convolutional
+                operators.
+              </li>
+              <li>
+                That makes NeCLO the better compromise for differentiable
+                inversion, even if pure slicing wins the raw latency contest.
+              </li>
+            </ol>
+          </section>
+
+          <div class="essay-separator">* * *</div>
+
+          <section class="essay-section">
+            <h2>From Solver Acceleration to Inverse Design</h2>
+            <p>
+              The real payoff is not only faster forward simulation. By
+              unrolling the solver and keeping the whole pipeline
+              differentiable, the work turns conductivity retrieval into a
+              direct optimization problem. In the reported experiment, the
+              learned conductivity converges back to the ground-truth
+              <strong>4.0 S/m</strong> within 500 epochs, with error on the order
+              of <strong>10<sup>-5</sup></strong>.
+            </p>
+            <figure class="essay-figure">
+              <img
+                src="/assets/blog/neclo-differentiable-electromagnetics/learning.png"
+                alt="Learning curves showing conductivity convergence and waveform agreement for NeCLO-based inversion."
+                loading="lazy"
+              />
+              <figcaption>
+                The inversion result is what makes the framework more than an
+                optimized solver: the recovered conductivity converges to the
+                correct physical parameter, and the learned waveform overlays the
+                CPU ground truth almost perfectly.
+              </figcaption>
+            </figure>
+          </section>
+
+          <div class="essay-separator">* * *</div>
+
+          <section class="essay-section">
+            <h2>What I Think This Means</h2>
+            <p>
+              For AI for science, this is a reminder that not every acceleration
+              problem should be handed first to a learned surrogate. Sometimes
+              the deeper win is representational: choose the computational form
+              that matches the structure of the physics and the structure of the
+              hardware at the same time.
+            </p>
+            <p>
+              NeCLO is compelling because it sits exactly in that overlap. It
+              keeps Maxwell's equations intact, stays differentiable enough for
+              inverse design, and rewrites a classical solver into something
+              modern accelerators can execute naturally. That feels less like
+              replacing physics with AI, and more like compiling physics into
+              the right substrate.
+            </p>
+          </section>
+
+          <div class="essay-separator">* * *</div>
+
+          <section class="essay-section">
+            <h2>Citation</h2>
+            <p>
+              This article is adapted from a collaborative manuscript:
+              <strong>
+                NeCLO: Neural Convolutional Learning Optimizer for
+                Electromagnetics
+              </strong>.
+            </p>
+            <div class="essay-bibtex">
+<pre>@misc{zhang2026neclo,
+  title={NeCLO: Neural Convolutional Learning Optimizer for Electromagnetics},
+  author={Zhang, Yanxin and Yang, Zaifeng and Yang, Xinyu and Lyu, Yueming},
+  year={2026},
+  note={AI4X -- Accelerate 2026 manuscript},
+  url={https://pgupdn.github.io/blog/2026/neclo-differentiable-electromagnetics/}
+}</pre>
+            </div>
+          </section>
+
+          <div class="essay-separator">* * *</div>
+
+          <section class="essay-section">
+            <h2>Enjoy Reading This Article?</h2>
+            <p>Here are a few places to continue:</p>
+            <ul>
+              <li><a href="/blog/">Back to the blog index</a></li>
+              <li><a href="/">Return to the homepage</a></li>
+              <li><a href="/blog/2026/drawing-auxiliary-lines/">Read the previous physics essay</a></li>
+            </ul>
+          </section>
+        </article>
+      </div>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container footer-shell">
+        <p>
+          &copy; <span id="year"></span> Xinyu Yang. Built with GitHub Pages.
+        </p>
+      </div>
+    </footer>
+
+    <script src="/script.js"></script>
+  </body>
+</html>

@@ -312,6 +312,14 @@ h1 span {
   letter-spacing: -0.03em;
 }
 
+.work-heading {
+  max-width: none;
+}
+
+.work-heading p {
+  max-width: none;
+}
+
 .card-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -327,84 +335,52 @@ h1 span {
   font-size: 1.45rem;
 }
 
-.work-grid {
+.project-list {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 1rem;
 }
 
-.work-card {
-  position: relative;
+.project-card {
   display: grid;
-  gap: 0.75rem;
-  padding: 1.35rem 1.4rem 1.45rem;
-  border: 1px solid rgba(255, 255, 255, 0.6);
-  border-radius: var(--radius-lg);
-  background: var(--surface);
-  box-shadow: var(--shadow);
-  backdrop-filter: blur(18px);
+  grid-template-columns: 0.75rem minmax(0, 1fr);
   overflow: hidden;
 }
 
-.work-card::before {
-  content: "";
-  position: absolute;
-  left: 1.35rem;
-  right: 1.35rem;
-  top: 0;
-  height: 4px;
-  border-radius: 999px;
-  background: var(--work-accent, var(--accent));
+.project-accent {
+  min-height: 100%;
 }
 
-.work-card-wide {
-  grid-column: 1 / -1;
-  padding-top: 1.55rem;
+.accent-one {
+  background: linear-gradient(180deg, #0f766e 0%, #56b4ac 100%);
 }
 
-.work-card h3 {
-  margin-top: 0.2rem;
-  font-size: clamp(1.55rem, 3vw, 2rem);
-  letter-spacing: -0.035em;
+.accent-two {
+  background: linear-gradient(180deg, #a85a30 0%, #e5ab7d 100%);
 }
 
-.work-card p {
+.accent-three {
+  background: linear-gradient(180deg, #243c5a 0%, #6581a6 100%);
+}
+
+.accent-four {
+  background: linear-gradient(180deg, #48566a 0%, #8ea0b5 100%);
+}
+
+.project-body {
+  padding: 1.45rem 1.5rem;
+}
+
+.project-body h3 {
+  margin-top: 0.55rem;
+  font-size: 1.5rem;
+}
+
+.project-body p {
   margin: 0;
   color: var(--muted);
 }
 
-.work-label {
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  font-size: 0.76rem;
-  color: var(--accent);
-}
-
-.work-card-essay {
-  --work-accent: linear-gradient(90deg, #243c5a 0%, #6581a6 100%);
-  background:
-    radial-gradient(circle at top right, rgba(101, 129, 166, 0.12), transparent 32%),
-    linear-gradient(160deg, rgba(36, 60, 90, 0.08), rgba(255, 255, 255, 0.62)),
-    var(--surface);
-}
-
-.work-card-system {
-  --work-accent: linear-gradient(90deg, #0f766e 0%, #56b4ac 100%);
-  background:
-    radial-gradient(circle at top right, rgba(15, 118, 110, 0.12), transparent 30%),
-    linear-gradient(160deg, rgba(15, 118, 110, 0.07), rgba(255, 255, 255, 0.62)),
-    var(--surface);
-}
-
-.work-card-knowledge {
-  --work-accent: linear-gradient(90deg, #a85a30 0%, #e5ab7d 100%);
-}
-
-.work-card-agents {
-  --work-accent: linear-gradient(90deg, #4b5563 0%, #9ca3af 100%);
-}
-
-.work-card a {
+.project-body a {
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
@@ -445,10 +421,17 @@ h1 span {
 
 .contact-copy {
   max-width: none;
+  width: 100%;
+  margin-bottom: 0;
 }
 
 .contact-copy p {
   max-width: none;
+}
+
+.contact-summary {
+  font-size: 1.06rem;
+  line-height: 1.9;
 }
 
 .contact-panel {
@@ -465,11 +448,13 @@ h1 span {
 }
 
 .contact-inline-link {
-  color: var(--text);
-  font-weight: 600;
+  color: var(--accent-strong);
+  font-weight: 700;
   text-decoration: underline;
-  text-decoration-color: rgba(15, 118, 110, 0.32);
+  text-decoration-color: rgba(15, 118, 110, 0.55);
+  text-decoration-thickness: 0.09em;
   text-underline-offset: 0.16em;
+  background: linear-gradient(180deg, transparent 62%, rgba(15, 118, 110, 0.14) 62%);
   overflow-wrap: anywhere;
 }
 
@@ -724,14 +709,6 @@ h1 span {
 
   .card-grid {
     grid-template-columns: 1fr;
-  }
-
-  .work-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .work-card-wide {
-    grid-column: auto;
   }
 
   .essay-stats {
