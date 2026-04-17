@@ -192,10 +192,15 @@ h1 span {
 
 .hero-thread {
   margin-top: 1.55rem;
-  padding: 1rem 1.15rem;
-  border-left: 3px solid var(--accent);
-  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
-  background: rgba(15, 118, 110, 0.07);
+  display: grid;
+  gap: 0.2rem;
+  padding: 1rem 1.15rem 1.05rem;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  border-radius: var(--radius-md);
+  background:
+    linear-gradient(140deg, rgba(255, 255, 255, 0.8), rgba(255, 252, 247, 0.64)),
+    var(--surface);
+  box-shadow: 0 14px 34px rgba(40, 30, 24, 0.06);
 }
 
 .hero-thread-label {
@@ -404,6 +409,10 @@ h1 span {
 
 .accent-four {
   background: linear-gradient(180deg, #48566a 0%, #8ea0b5 100%);
+}
+
+.accent-five {
+  background: linear-gradient(180deg, #6b4f2d 0%, #c49a6c 100%);
 }
 
 .project-body {
