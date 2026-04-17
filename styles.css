@@ -327,44 +327,84 @@ h1 span {
   font-size: 1.45rem;
 }
 
-.project-list {
+.work-grid {
   display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 1rem;
 }
 
-.project-card {
+.work-card {
+  position: relative;
   display: grid;
-  grid-template-columns: 0.75rem minmax(0, 1fr);
+  gap: 0.75rem;
+  padding: 1.35rem 1.4rem 1.45rem;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(18px);
   overflow: hidden;
 }
 
-.project-accent {
-  min-height: 100%;
+.work-card::before {
+  content: "";
+  position: absolute;
+  left: 1.35rem;
+  right: 1.35rem;
+  top: 0;
+  height: 4px;
+  border-radius: 999px;
+  background: var(--work-accent, var(--accent));
 }
 
-.accent-one {
-  background: linear-gradient(180deg, #0f766e 0%, #56b4ac 100%);
+.work-card-wide {
+  grid-column: 1 / -1;
+  padding-top: 1.55rem;
 }
 
-.accent-two {
-  background: linear-gradient(180deg, #a85a30 0%, #e5ab7d 100%);
+.work-card h3 {
+  margin-top: 0.2rem;
+  font-size: clamp(1.55rem, 3vw, 2rem);
+  letter-spacing: -0.035em;
 }
 
-.accent-three {
-  background: linear-gradient(180deg, #243c5a 0%, #6581a6 100%);
+.work-card p {
+  margin: 0;
+  color: var(--muted);
 }
 
-.project-body {
-  padding: 1.45rem 1.5rem;
+.work-label {
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-size: 0.76rem;
+  color: var(--accent);
 }
 
-.project-body h3 {
-  margin-top: 0.55rem;
-  font-size: 1.5rem;
+.work-card-essay {
+  --work-accent: linear-gradient(90deg, #243c5a 0%, #6581a6 100%);
+  background:
+    radial-gradient(circle at top right, rgba(101, 129, 166, 0.12), transparent 32%),
+    linear-gradient(160deg, rgba(36, 60, 90, 0.08), rgba(255, 255, 255, 0.62)),
+    var(--surface);
 }
 
-.project-body a,
-.contact-link {
+.work-card-system {
+  --work-accent: linear-gradient(90deg, #0f766e 0%, #56b4ac 100%);
+  background:
+    radial-gradient(circle at top right, rgba(15, 118, 110, 0.12), transparent 30%),
+    linear-gradient(160deg, rgba(15, 118, 110, 0.07), rgba(255, 255, 255, 0.62)),
+    var(--surface);
+}
+
+.work-card-knowledge {
+  --work-accent: linear-gradient(90deg, #a85a30 0%, #e5ab7d 100%);
+}
+
+.work-card-agents {
+  --work-accent: linear-gradient(90deg, #4b5563 0%, #9ca3af 100%);
+}
+
+.work-card a {
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
@@ -403,54 +443,39 @@ h1 span {
   padding-bottom: 5rem;
 }
 
+.contact-copy {
+  max-width: none;
+}
+
+.contact-copy p {
+  max-width: none;
+}
+
 .contact-panel {
   max-width: 42rem;
-  display: grid;
-  gap: 0.6rem;
   padding: 1.15rem 1.25rem 1.2rem;
-  border-radius: var(--radius-md);
-  background:
-    linear-gradient(140deg, rgba(255, 255, 255, 0.82), rgba(255, 252, 247, 0.58)),
-    var(--surface);
-  box-shadow: 0 14px 34px rgba(40, 30, 24, 0.06);
-}
-
-.contact-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem 1rem;
-  align-items: baseline;
-}
-
-.contact-label {
-  margin: 0;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  font-size: 0.74rem;
-  color: var(--accent);
 }
 
 .contact-link {
-  margin-top: 0;
   display: inline-flex;
-  max-width: 100%;
-  font-size: clamp(1.02rem, 2vw, 1.28rem);
-  line-height: 1.35;
-  letter-spacing: -0.015em;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--accent-strong);
+  font-weight: 600;
+}
+
+.contact-inline-link {
+  color: var(--text);
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-color: rgba(15, 118, 110, 0.32);
+  text-underline-offset: 0.16em;
   overflow-wrap: anywhere;
 }
 
-.contact-email {
-  color: var(--text);
-}
-
-.contact-email:hover {
+.contact-inline-link:hover {
   color: var(--accent-strong);
-}
-
-.contact-note {
-  max-width: 34rem;
-  font-size: 0.95rem;
+  text-decoration-color: currentColor;
 }
 
 .site-footer {
@@ -699,6 +724,14 @@ h1 span {
 
   .card-grid {
     grid-template-columns: 1fr;
+  }
+
+  .work-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .work-card-wide {
+    grid-column: auto;
   }
 
   .essay-stats {
