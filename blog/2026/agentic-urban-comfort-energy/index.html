@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      Agentic AI for Thermal Comfort and Building Energy in Tropical Urban
+      Neighborhoods | Xinyu Yang
+    </title>
+    <meta
+      name="description"
+      content="A tech blog by Xinyu Yang on an agentic AI framework that couples LLM orchestration with lightweight urban physics models for thermal comfort and building energy assessment in tropical neighborhoods."
+    />
+    <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body class="blog-page-body">
+    <header class="site-header">
+      <div class="container nav-shell">
+        <a class="brand" href="/" aria-label="Go to the home page">XY</a>
+        <button
+          class="nav-toggle"
+          type="button"
+          aria-expanded="false"
+          aria-controls="site-nav"
+        >
+          Menu
+        </button>
+        <nav id="site-nav" class="site-nav" aria-label="Main navigation">
+          <a href="/#about">about</a>
+          <a class="current" href="/blog/">blog</a>
+          <a href="/#focus">focus</a>
+          <a href="/#work">selected work</a>
+          <a href="/#notes">notes</a>
+          <a href="/#contact">contact</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="post-page">
+      <div class="container">
+        <article class="essay-layout">
+          <header class="essay-header">
+            <h1 class="essay-title">
+              Agentic AI for Thermal Comfort and Building Energy in Tropical
+              Urban Neighborhoods
+            </h1>
+            <p class="essay-date">Created in April 18, 2026</p>
+            <p class="essay-taxonomy">
+              <a href="/blog/">2026</a>
+              <span>&middot;</span>
+              <span>AI for Science</span>
+              <span>&middot;</span>
+              <span>Urban Climate</span>
+              <span>&middot;</span>
+              <span>Agentic Systems</span>
+            </p>
+            <p class="essay-author">Author: Xinyu Yang</p>
+          </header>
+
+          <div class="essay-separator">* * *</div>
+
+          <section class="essay-section">
+            <h2>Why This Workflow Matters</h2>
+            <p>
+              In tropical cities like Singapore, the practical questions are not
+              abstract. Which plazas will become pedestrian heat-stress
+              hotspots? Which blocks are driving cooling demand? Which surface
+              strategies improve outdoor comfort without quietly worsening
+              another part of the system?
+            </p>
+            <p>
+              The hard part is not that we lack simulation tools. It is that
+              neighborhood-scale comfort and energy studies are still awkward to
+              run end to end. Geometry has to be cleaned, weather has to be
+              resolved, multiple solvers have to be configured, and results have
+              to be translated back into something a planner or designer can act
+              on.
+            </p>
+            <div class="essay-note">
+              <p>
+                <strong>The core claim:</strong> the most useful role for an LLM
+                here is not to replace the physics, but to coordinate the
+                workflow around the physics.
+              </p>
+            </div>
+          </section>
+
+          <div class="essay-separator">* * *</div>
+
+          <section class="essay-section">
+            <h2>Let the LLM Coordinate, Not Hallucinate the Physics</h2>
+            <p>
+              The framework in this manuscript treats the LLM as an
+              orchestrator. A user describes an urban design task in plain
+              language, and the system decides what needs to happen next:
+              interpret the intent, load and index the geometry, resolve weather
+              and material parameters, run the appropriate lightweight solvers,
+              and finally synthesize the outputs into a readable report.
+            </p>
+            <p>
+              That design choice matters. The LLM handles planning,
+              explanation, and tool routing, while the actual environmental
+              estimates still come from explicit physics-based models for
+              airflow, radiative exchange, thermal comfort, and building heat
+              gain.
+            </p>
+            <figure class="essay-figure">
+              <img
+                src="/assets/blog/agentic-urban-comfort-energy/framework.png"
+                alt="A workflow diagram showing an agentic orchestrator that links intent analysis, geometry analysis, CFD, solar simulation, heat balance, and comfort and energy outputs."
+              />
+              <figcaption>
+                The system is organized around a task orchestrator that keeps
+                the LLM in a supervisory role and delegates quantitative work to
+                geometry processing, CFD, solar, heat-balance, and reporting
+                modules.
+              </figcaption>
+            </figure>
+          </section>
+
+          <div class="essay-separator">* * *</div>
+
+          <section class="essay-section">
+            <h2>Input Governance Is the Real Product</h2>
+            <p>
+              One of the strongest ideas in the paper is that the LLM is
+              advisory but not authoritative. Solver inputs are filled through a
+              strict priority chain, which makes the workflow auditable instead
+              of conversational in a loose, hand-wavy way.
+            </p>
+            <ol>
+              <li>Configuration defaults establish structural simulation settings.</li>
+              <li>Climate files such as IWEC provide the main hourly weather baseline.</li>
+              <li>Optional real-time weather services only fill gaps that remain unset.</li>
+              <li>LLM suggestions are applied only when authoritative sources do not provide a value.</li>
+              <li>User overrides sit at the highest priority and win over everything else.</li>
+            </ol>
+            <p>
+              That hierarchy is more important than it sounds. It turns the LLM
+              from a source of potentially unstable numerical inputs into a
+              workflow layer whose suggestions are bounded by explicit data
+              governance.
+            </p>
+          </section>
+
+          <div class="essay-separator">* * *</div>
+
+          <section class="essay-section">
+            <h2>The Physics Stack Stays Lightweight but Explicit</h2>
+            <p>
+              The framework does not aim to reproduce every detail of a
+              full-scale digital twin. Instead, it uses lightweight models that
+              are fast enough for comparative district studies while still
+              remaining physically interpretable.
+            </p>
+            <ul>
+              <li>
+                A CFD component estimates wind fields using a pseudo-3D strategy
+                built from multiple 2D slices and height interpolation.
+              </li>
+              <li>
+                A radiation and surface energy balance model evolves surface
+                temperature from shortwave, longwave, and convective fluxes.
+              </li>
+              <li>
+                Thermal comfort is summarized with PET, while cooling demand is
+                approximated from envelope heat transfer into a cumulative
+                energy-use metric.
+              </li>
+            </ul>
+            <p>
+              The point is not to claim that a lightweight model replaces
+              high-fidelity simulation. The point is that an agentic workflow
+              becomes much more usable when the analysis loop is quick enough to
+              support audit, intervention, and comparison in one sitting.
+            </p>
+          </section>
+
+          <div class="essay-separator">* * *</div>
+
+          <section class="essay-section">
+            <h2>Scenario I: From Semantic Prompt to District-Scale Audit</h2>
+            <p>
+              The baseline test is a good stress test for the orchestration
+              layer because the prompt is intentionally under-specified. The
+              system is asked to run a coupled CFD and solar audit for the late
+              March to May inter-monsoon window, focusing on comfort, energy
+              demand, and hotspot detection, without the user spelling out every
+              numerical parameter.
+            </p>
+            <div class="essay-stats">
+              <div class="essay-stat">
+                <div class="essay-stat-value">1×1 km</div>
+                <p>representative district domain used in the study cases</p>
+              </div>
+              <div class="essay-stat">
+                <div class="essay-stat-value">2 m</div>
+                <p>average horizontal resolution around the building clusters</p>
+              </div>
+              <div class="essay-stat">
+                <div class="essay-stat-value">52.18°C</div>
+                <p>peak PET hotspot detected in District A near buildings b025 and b057</p>
+              </div>
+              <div class="essay-stat">
+                <div class="essay-stat-value">52.35°C</div>
+                <p>peak PET hotspot detected in District B near buildings b040 and b055</p>
+              </div>
+            </div>
+            <p>
+              Once the run completes, the system produces spatial PET maps,
+              building-scale cooling indicators, hotspot coordinates, and a
+              readable narrative that ties those results back to geometry and
+              material causes.
+            </p>
+            <figure class="essay-figure">
+              <img
+                src="/assets/blog/agentic-urban-comfort-energy/baseline-results.png"
+                alt="PET maps and cooling energy intensity maps for two districts at representative times."
+                loading="lazy"
+              />
+              <figcaption>
+                The baseline audit already gives two kinds of output a planner
+                actually needs together: pedestrian-level thermal stress and
+                building-scale cooling demand.
+              </figcaption>
+            </figure>
+          </section>
+
+          <div class="essay-separator">* * *</div>
+
+          <section class="essay-section">
+            <h2>Traceability Changes the Conversation</h2>
+            <p>
+              A subtle but important part of the workflow is that geometry is
+              not treated as anonymous mesh data. The pipeline assigns building
+              IDs, extracts footprints and bounding boxes, and generates an
+              index map so that a hotspot in the report can be traced back to a
+              specific part of the district.
+            </p>
+            <p>
+              That sounds mundane, but it is exactly the difference between “the
+              model says this area is bad” and “building b086 and the plaza near
+              b040 and b055 are the problem.” The latter is a design discussion.
+            </p>
+            <figure class="essay-figure">
+              <img
+                src="/assets/blog/agentic-urban-comfort-energy/district-a-ids.jpg"
+                alt="Plan-view building ID map for District A."
+                loading="lazy"
+              />
+              <figcaption>
+                District A is indexed building by building, which lets the
+                analysis report name the exact blocks associated with PET
+                hotspots or unusually high cooling load.
+              </figcaption>
+            </figure>
+            <figure class="essay-figure">
+              <img
+                src="/assets/blog/agentic-urban-comfort-energy/district-b-ids.jpg"
+                alt="Plan-view building ID map for District B."
+                loading="lazy"
+              />
+              <figcaption>
+                The same indexing logic carries over to District B, so results
+                are comparable across layouts instead of being trapped inside a
+                one-off visualization.
+              </figcaption>
+            </figure>
+          </section>
+
+          <div class="essay-separator">* * *</div>
+
+          <section class="essay-section">
+            <h2>Scenario II: The Closed-Loop Material Intervention</h2>
+            <p>
+              The second scenario is where the framework becomes more than a
+              reporting tool. After the baseline audit, the agent is asked to
+              propose and apply surface material changes that should improve
+              comfort and reduce cooling demand. The system runs a baseline,
+              proposes albedo adjustments, re-simulates, and compares the
+              before-and-after metrics.
+            </p>
+            <p>
+              This is a useful example of what “agentic” should mean in a
+              scientific setting. The agent is not optimizing by brute force. It
+              is forming a hypothesis, executing it through the physics engine,
+              and then revising its recommendation when the results reveal a
+              trade-off.
+            </p>
+            <figure class="essay-figure">
+              <img
+                src="/assets/blog/agentic-urban-comfort-energy/albedo-strategy.png"
+                alt="A comparison of baseline and suggested albedo settings for roofs, facades, and ground surfaces."
+                loading="lazy"
+              />
+              <figcaption>
+                The intervention phase modifies roof, facade, and ground albedo,
+                then reruns the district analysis so the recommendation can be
+                judged against actual solver outputs rather than intuition alone.
+              </figcaption>
+            </figure>
+          </section>
+
+          <div class="essay-separator">* * *</div>
+
+          <section class="essay-section">
+            <h2>The Most Interesting Result Is the Albedo Penalty</h2>
+            <p>
+              The intervention works for one objective and backfires for
+              another. High-albedo surfaces reduce envelope heat gain and lower
+              cooling demand, but the same bright surfaces can increase
+              shortwave reflection onto pedestrians and slightly worsen thermal
+              comfort at exposed hotspots.
+            </p>
+            <div class="essay-note">
+              <p>
+                <strong>The key lesson:</strong> a strategy that looks good from
+                the building envelope can still be bad at pedestrian level. The
+                agent only becomes useful when it can discover that conflict and
+                revise its recommendation.
+              </p>
+            </div>
+            <div class="essay-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Building ID</th>
+                    <th>Description</th>
+                    <th>Cooling-load reduction</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>b091</td>
+                    <td>Tall corner tower</td>
+                    <td>-10.7%</td>
+                  </tr>
+                  <tr>
+                    <td>b090</td>
+                    <td>Tall central tower</td>
+                    <td>-10.1%</td>
+                  </tr>
+                  <tr>
+                    <td>b085</td>
+                    <td>46 m tower</td>
+                    <td>-9.6%</td>
+                  </tr>
+                  <tr>
+                    <td>b077</td>
+                    <td>37.7 m block (south)</td>
+                    <td>-11.4%</td>
+                  </tr>
+                  <tr>
+                    <td>b040</td>
+                    <td>32.1 m block (north-east)</td>
+                    <td>-10.8%</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <p>
+              In the reported comparison, representative high-load buildings
+              improve by roughly <strong>8.5% to 11.4%</strong> in daily cooling
+              energy, while the noon PET hotspot can increase by about
+              <strong>1°C</strong>. That is exactly the kind of cross-objective
+              trade-off that gets lost in single-metric optimization.
+            </p>
+          </section>
+
+          <div class="essay-separator">* * *</div>
+
+          <section class="essay-section">
+            <h2>What I Think This Means</h2>
+            <p>
+              The most promising part of this work is not that an LLM can write
+              a nicer report. It is that an agent can sit on top of a physics
+              workflow without overriding the domain logic. The agent interprets
+              intent, selects tools, resolves parameters, and explains outcomes,
+              but the actual environmental behavior still comes from explicit
+              models and controlled inputs.
+            </p>
+            <p>
+              That makes the framework useful in a way many “LLM for simulation”
+              demos are not. It stays conversational where conversation helps,
+              stays deterministic where determinism matters, and makes the
+              resulting analysis traceable enough for cross-disciplinary review.
+            </p>
+          </section>
+
+          <div class="essay-separator">* * *</div>
+
+          <section class="essay-section">
+            <h2>Citation</h2>
+            <p>
+              This article is adapted from a collaborative manuscript:
+              <strong>
+                Agentic AI-Enabled Framework for Thermal Comfort and Building
+                Energy Assessment in Tropical Urban Neighborhoods
+              </strong>.
+            </p>
+            <div class="essay-bibtex">
+<pre>@misc{lai2026agenticurban,
+  title={Agentic AI-Enabled Framework for Thermal Comfort and Building Energy Assessment in Tropical Urban Neighborhoods},
+  author={Lai, Po-Yen and Yang, Xinyu and Low, Derrick and Liu, Huizhe and Wong, Jian Cheng},
+  year={2026},
+  note={Manuscript in preparation},
+  url={https://pgupdn.github.io/blog/2026/agentic-urban-comfort-energy/}
+}</pre>
+            </div>
+          </section>
+
+          <div class="essay-separator">* * *</div>
+
+          <section class="essay-section">
+            <h2>Enjoy Reading This Article?</h2>
+            <p>Here are a few places to continue:</p>
+            <ul>
+              <li><a href="/blog/">Back to the blog index</a></li>
+              <li><a href="/">Return to the homepage</a></li>
+              <li><a href="https://pgupdn.github.io/urban-cooling-agent/">Open the urban-cooling live demo</a></li>
+            </ul>
+          </section>
+        </article>
+      </div>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container footer-shell">
+        <p>
+          &copy; <span id="year"></span> Xinyu Yang. Built with GitHub Pages.
+        </p>
+      </div>
+    </footer>
+
+    <script src="/script.js"></script>
+  </body>
+</html>
