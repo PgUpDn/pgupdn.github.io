@@ -78,7 +78,7 @@
             short, hidden states line up with Newtonian quantities like force; when
             the context grows to 100 steps, the same model shifts toward Keplerian
             geometry. It starts fitting ellipses instead of discovering
-            interaction.
+            interaction.<sup class="essay-citation"><a href="#ref-liu2026kepler">[1]</a></sup>
           </p>
           <p>
             This project asks a narrow question with a broader implication: if a
@@ -106,7 +106,8 @@
           <h2>The Metric</h2>
           <p>
             I track the difference between Newtonian probe scores and Keplerian
-            probe scores using a single summary value, ΔN.
+            probe scores using a single summary value, ΔN, following the probing
+            setup introduced in the original Kepler-to-Newton study.<sup class="essay-citation"><a href="#ref-liu2026kepler">[1]</a></sup>
           </p>
           <div class="essay-note">
             <p>
@@ -148,7 +149,9 @@
             relational information Newtonian reasoning needs: who interacts with
             whom, in what direction, and with what distance-dependent structure.
             The question is not whether that information exists. The question is how
-            visible it becomes to the Transformer.
+            visible it becomes to the Transformer. In the underlying manuscript, I
+            use a Triplet-GMPNN-style relational encoder as the pre-trained graph
+            module.<sup class="essay-citation"><a href="#ref-ibarz2022generalist">[2]</a></sup>
           </p>
           <figure class="essay-figure">
             <img
@@ -199,7 +202,9 @@
           <p>
             The key distinction is that cross-attention keeps the GNN optional,
             while input enrichment makes it part of the representation from the
-            first layer onward.
+            first layer onward. The cross-attention branch is inspired by
+            TransNAR-style GNN-Transformer integration, but in this setting that
+            optional route turns out to be exactly the weakness.<sup class="essay-citation"><a href="#ref-bounsi2024transformers">[3]</a></sup>
           </p>
           <figure class="essay-figure">
             <img
@@ -328,6 +333,30 @@
             <em>what structure should the model be allowed to see from the
             beginning?</em>
           </p>
+        </section>
+
+        <div class="essay-separator">* * *</div>
+
+        <section class="essay-section">
+          <h2>References</h2>
+          <ol class="essay-references">
+            <li id="ref-liu2026kepler">
+              Liu, Z., Sanborn, S., Ganguli, S., and Tolias, A. <em>From Kepler
+              to Newton: Inductive Biases Guide Learned World Models in
+              Transformers.</em> arXiv preprint arXiv:2602.06923, 2026.
+            </li>
+            <li id="ref-ibarz2022generalist">
+              Ibarz, B., Kurin, V., Papamakarios, G., Nikiforou, K., Bennani,
+              M., Csordas, R., and Velickovic, P. <em>A Generalist Neural
+              Algorithmic Learner.</em> Learning on Graphs (LoG), 2022.
+            </li>
+            <li id="ref-bounsi2024transformers">
+              Bounsi, W., Ibarz, B., Dudzik, A., Hamrick, J. B., Markeeva, L.,
+              Vitvitskyi, A., Pascanu, R., and Velickovic, P. <em>Transformers
+              Meet Neural Algorithmic Reasoners.</em> arXiv preprint
+              arXiv:2406.09308, 2024.
+            </li>
+          </ol>
         </section>
 
         <div class="essay-separator">* * *</div>

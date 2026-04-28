@@ -667,12 +667,25 @@ h1 span {
   color: var(--text);
 }
 
+.essay-citation {
+  font-size: 0.78em;
+  vertical-align: super;
+}
+
+.essay-citation a {
+  color: var(--accent-strong);
+}
+
 .essay-section ul,
 .essay-section ol {
   margin: 0;
   padding-left: 1.2rem;
   display: grid;
   gap: 0.65rem;
+}
+
+.essay-references {
+  gap: 0.9rem;
 }
 
 .essay-note {
