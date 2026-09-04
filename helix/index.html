@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>HELIX — A research harness that gets better at research</title>
+<meta name="description" content="HELIX runs the research loop end to end: it proposes approaches, builds and trains them, scores them for real, keeps what works, and audits its own results before reporting.">
+<meta name="referrer" content="no-referrer">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23256abf'/%3E%3Cpath d='M18 16c14 0 14 32 28 32M46 16c-14 0-14 32-28 32' fill='none' stroke='%23fff' stroke-width='5' stroke-linecap='round'/%3E%3C/svg%3E">
+<style>
+/* ---------- Design tokens (light is default; dark is a selected token set) ---------- */
+:root {
+  color-scheme: light;
+  --page: #f9f9f7;
+  --surface: #fcfcfb;
+  --surface-2: #f3f2ee;
+  --text: #0b0b0b;
+  --text-2: #52514e;
+  --muted: #6f6d66;
+  --grid: #e1e0d9;
+  --axis: #b0aea3;
+  --border: rgba(11, 11, 11, 0.10);
+  --accent: #256abf;
+  --accent-hover: #2264b8;
+  --on-accent: #ffffff;
+  --good: #006300;
+  --series-1: #256abf;   /* HELIX (emphasis) */
+  --series-2: #6f6d66;   /* comparator, darker gray */
+  --series-3: #9d9b92;   /* comparator, lighter gray */
+  --shadow: 0 1px 2px rgba(11, 11, 11, 0.04), 0 8px 24px rgba(11, 11, 11, 0.05);
+}
+@media (prefers-color-scheme: dark) {
+  :root:where(:not([data-theme="light"])) {
+    color-scheme: dark;
+    --page: #0d0d0d;
+    --surface: #1a1a19;
+    --surface-2: #222220;
+    --text: #ffffff;
+    --text-2: #c3c2b7;
+    --muted: #898781;
+    --grid: #2c2c2a;
+    --axis: #383835;
+    --border: rgba(255, 255, 255, 0.10);
+    --accent: #3987e5;
+    --accent-hover: #5598e7;
+    --on-accent: #0b0b0b;
+    --good: #0ca30c;
+    --series-1: #3987e5;
+    --series-2: #898781;
+    --series-3: #6f6e68;
+    --shadow: none;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --page: #0d0d0d;
+  --surface: #1a1a19;
+  --surface-2: #222220;
+  --text: #ffffff;
+  --text-2: #c3c2b7;
+  --muted: #898781;
+  --grid: #2c2c2a;
+  --axis: #383835;
+  --border: rgba(255, 255, 255, 0.10);
+  --accent: #3987e5;
+  --accent-hover: #5598e7;
+  --on-accent: #0b0b0b;
+  --good: #0ca30c;
+  --series-1: #3987e5;
+  --series-2: #898781;
+  --series-3: #6f6e68;
+  --shadow: none;
+}
+
+/* ---------- Base ---------- */
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--text);
+  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-size: clamp(1rem, 0.95rem + 0.25vw, 1.125rem);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+h1, h2, h3 { margin: 0; line-height: 1.15; letter-spacing: -0.01em; overflow-wrap: anywhere; }
+p { margin: 0; overflow-wrap: anywhere; }
+a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 0.15em; }
+a:hover { color: var(--accent-hover); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
+.skip {
+  position: absolute; left: 1rem; top: -100px;
+  background: var(--surface); color: var(--text); padding: 0.75rem 1rem;
+  border: 1px solid var(--border); border-radius: 8px; z-index: 100;
+}
+.skip:focus { top: 1rem; }
+.container { width: 100%; max-width: 1120px; margin-inline: auto; padding-inline: clamp(1rem, 4vw, 2.5rem); }
+.prose { max-width: 65ch; }
+.section { padding-block: clamp(3rem, 4vw + 1.5rem, 6rem); }
+.section + .section { border-top: 1px solid var(--border); }
+.eyebrow { font-size: 0.875rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.75rem; }
+h2 { font-size: clamp(1.5rem, 1.1rem + 1.6vw, 2.25rem); font-weight: 600; }
+.lead { color: var(--text-2); font-size: clamp(1.05rem, 0.95rem + 0.4vw, 1.25rem); margin-top: 1rem; }
+.stack > * + * { margin-top: 1rem; }
+.mt-2 { margin-top: 2rem; }
+.mt-3 { margin-top: 3rem; }
+
+/* ---------- Header / nav ---------- */
+.site-header {
+  position: relative; z-index: 50;
+  background: color-mix(in srgb, var(--page) 88%, transparent);
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--border);
+}
+@supports not (background: color-mix(in srgb, red 50%, blue)) { .site-header { background: var(--page); } }
+@media (min-width: 700px) { .site-header { position: sticky; top: 0; } }
+.nav { display: flex; flex-wrap: wrap; align-items: center; gap: 0.25rem 1rem; min-height: 64px; padding-block: 0.375rem; }
+.brand { display: inline-flex; align-items: center; gap: 0.6rem; min-height: 44px; color: var(--text); text-decoration: none; font-weight: 700; font-size: 1.125rem; letter-spacing: 0.02em; }
+.brand svg { width: 28px; height: 28px; flex: none; }
+.nav > nav { margin-left: auto; order: 1; }
+.nav > .theme-btn { order: 2; }
+.nav-links { display: flex; flex-wrap: wrap; align-items: center; gap: 0.125rem; margin: 0; padding: 0; list-style: none; }
+.nav-links a {
+  display: inline-flex; align-items: center; min-height: 44px; padding: 0 0.75rem;
+  color: var(--text-2); text-decoration: none; font-weight: 500; font-size: 0.9375rem; border-radius: 8px;
+}
+.nav-links a:hover { color: var(--text); background: var(--surface-2); }
+.theme-btn {
+  display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px;
+  border: 1px solid var(--border); border-radius: 10px; background: var(--surface); color: var(--text-2); cursor: pointer;
+}
+.theme-btn:hover { color: var(--text); }
+.theme-btn svg { width: 18px; height: 18px; }
+.theme-btn .moon { display: none; }
+@media (max-width: 560px) {
+  .nav > nav { order: 2; width: 100%; margin-left: 0; }
+  .nav > .theme-btn { order: 1; margin-left: auto; }
+  .nav-links { margin-left: -0.6rem; }
+  .nav-links a { padding: 0 0.6rem; }
+}
+:root[data-theme="dark"] .theme-btn .sun { display: none; }
+:root[data-theme="dark"] .theme-btn .moon { display: block; }
+@media (prefers-color-scheme: dark) {
+  :root:where(:not([data-theme="light"])) .theme-btn .sun { display: none; }
+  :root:where(:not([data-theme="light"])) .theme-btn .moon { display: block; }
+}
+
+/* ---------- Hero ---------- */
+.hero { padding-block: clamp(4rem, 6vw + 2rem, 8rem) clamp(3rem, 5vw + 1rem, 6rem); }
+.hero h1 { font-size: clamp(2.125rem, 1.25rem + 4vw, 4rem); font-weight: 700; letter-spacing: -0.02em; max-width: 18ch; }
+.hero .lead { max-width: 60ch; margin-top: 1.25rem; }
+.cta-row { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 2rem; }
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+  min-height: 48px; padding: 0.75rem 1.375rem; border-radius: 10px;
+  font-weight: 600; font-size: 1rem; text-decoration: none; cursor: pointer;
+  border: 1px solid transparent; transition: background-color 120ms ease, color 120ms ease;
+}
+.btn-primary { background: var(--accent); color: var(--on-accent); }
+.btn-primary:hover { background: var(--accent-hover); color: var(--on-accent); }
+.btn-secondary { background: var(--surface); color: var(--text); border-color: var(--border); }
+.btn-secondary:hover { background: var(--surface-2); color: var(--text); }
+.hero-note { margin-top: 1.25rem; font-size: 0.9375rem; color: var(--muted); max-width: 60ch; }
+
+/* ---------- Cards, tiles, KPI row ---------- */
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; box-shadow: var(--shadow); }
+.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); gap: 1rem; margin-top: 2rem; }
+.tile { padding: clamp(1.25rem, 2vw, 1.75rem); }
+.tile-icon { width: 40px; height: 40px; display: grid; place-items: center; border-radius: 10px; background: var(--surface-2); color: var(--accent); margin-bottom: 1rem; }
+.tile-icon svg { width: 22px; height: 22px; }
+.tile h3 { font-size: 1.125rem; font-weight: 600; margin-bottom: 0.5rem; }
+.tile p { color: var(--text-2); font-size: 0.9875rem; }
+.kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); gap: 1rem; margin-top: 2rem; }
+.kpi { padding: clamp(1.125rem, 2vw, 1.5rem); display: flex; flex-direction: column; gap: 0.35rem; }
+.kpi-label { font-size: 0.9375rem; color: var(--text-2); }
+.kpi-value { font-size: clamp(2rem, 1.2rem + 2vw, 2.5rem); font-variant-numeric: tabular-nums; font-weight: 600; line-height: 1.1; letter-spacing: -0.02em; overflow-wrap: anywhere; }
+.kpi-sub { font-size: 0.9375rem; color: var(--muted); }
+.kpi-delta { font-size: 0.9375rem; font-weight: 600; color: var(--good); display: inline-flex; align-items: center; gap: 0.3rem; }
+.kpi-delta svg { width: 12px; height: 12px; }
+.kpi-delta span { color: var(--text-2); font-weight: 500; }
+@media (min-width: 818px) and (max-width: 1087px) { .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.disclosure {
+  margin-top: 1.25rem; padding: 0.875rem 1rem; border-radius: 10px;
+  background: var(--surface-2); border: 1px solid var(--border);
+  color: var(--text-2); font-size: 0.9375rem; max-width: 72ch;
+}
+.disclosure strong { color: var(--text); font-weight: 600; }
+
+/* ---------- Emphasis chart (HTML bars) ---------- */
+.chart { margin-top: 2rem; padding: clamp(1.125rem, 2vw, 1.75rem); }
+.chart-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 0.5rem 1.5rem; }
+.chart-title { font-size: 1.0625rem; font-weight: 600; }
+.chart-sub { font-size: 0.9375rem; color: var(--muted); }
+.legend { display: flex; flex-wrap: wrap; gap: 0.5rem 1.25rem; margin: 0; padding: 0; list-style: none; font-size: 0.9375rem; color: var(--text-2); }
+.legend li { display: inline-flex; align-items: center; gap: 0.45rem; min-height: 24px; }
+.swatch { width: 12px; height: 12px; border-radius: 3px; flex: none; }
+.s1 { background: var(--series-1); } .s2 { background: var(--series-2); } .s3 { background: var(--series-3); }
+.facets { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 1.5rem 2rem; margin-top: 1.5rem; }
+.facet { --labelw: 8rem; --gutter: 3.25rem; min-width: 0; }
+.facet-title { font-size: 0.9375rem; font-weight: 600; margin-bottom: 0.75rem; }
+.facet-title small { display: block; font-weight: 400; color: var(--muted); font-size: 0.9375rem; margin-top: 0.125rem; }
+.plot { position: relative; display: grid; row-gap: 2px; }
+.plot::before {
+  content: ""; position: absolute; top: 0; bottom: 0; left: var(--labelw); right: var(--gutter);
+  border-left: 1px solid var(--axis);
+  background-image: linear-gradient(to left, var(--grid) 1px, transparent 1px);
+  background-size: 25% 100%; background-repeat: repeat-x;
+  pointer-events: none;
+}
+.row {
+  position: relative; display: grid; grid-template-columns: var(--labelw) 1fr var(--gutter);
+  align-items: center; min-height: 24px; border-radius: 6px; cursor: default; outline-offset: 2px;
+}
+.row .name { font-size: 0.9375rem; color: var(--text-2); padding-right: 0.75rem; line-height: 1.2; overflow-wrap: anywhere; }
+.row.is-hero .name { color: var(--text); font-weight: 600; }
+.lane { position: relative; height: 22px; min-width: 0; }
+.bar { position: absolute; left: 0; top: 0; height: 100%; width: calc(var(--v) * 1%); border-radius: 0 4px 4px 0; transition: filter 120ms ease; }
+.row:hover .bar, .row:focus-visible .bar { filter: brightness(1.12); }
+.val {
+  position: absolute; left: calc(var(--v) * 1% + 8px); top: 50%; transform: translateY(-50%);
+  font-size: 0.9375rem; font-weight: 600; color: var(--text); white-space: nowrap; line-height: 1;
+}
+.axis { display: grid; grid-template-columns: var(--labelw) 1fr var(--gutter); margin-top: 0.5rem; }
+.ticks { position: relative; grid-column: 2; height: 1.1rem; font-size: 0.8125rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+.ticks span { position: absolute; top: 0; transform: translateX(-50%); line-height: 1; }
+.ticks span:first-child { transform: none; }
+.ticks span:last-child { transform: translateX(-100%); }
+.chart-foot { margin-top: 1rem; font-size: 0.9375rem; color: var(--muted); }
+details.tableview { margin-top: 1rem; }
+details.tableview summary { cursor: pointer; font-size: 0.9375rem; font-weight: 500; color: var(--accent); min-height: 44px; display: flex; align-items: center; width: max-content; padding-inline: 0.25rem; }
+.table-wrap { overflow-x: auto; margin-top: 0.5rem; }
+table { border-collapse: collapse; width: 100%; font-size: 0.9375rem; }
+th, td { text-align: left; padding: 0.6rem 0.75rem; border-bottom: 1px solid var(--grid); vertical-align: top; }
+th { font-weight: 600; color: var(--text-2); font-size: 0.9375rem; }
+td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+td.num { white-space: nowrap; }
+caption { text-align: left; color: var(--muted); font-size: 0.9375rem; padding-bottom: 0.5rem; }
+.tip {
+  position: fixed; z-index: 60; pointer-events: none; display: none;
+  background: var(--surface); color: var(--text); border: 1px solid var(--border); border-radius: 8px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.12); padding: 0.5rem 0.7rem; font-size: 0.9375rem; line-height: 1.35; max-width: 16rem;
+}
+.tip.show { display: block; }
+.tip .tv { display: block; font-weight: 600; font-size: 0.9375rem; }
+.tip .tl { display: flex; align-items: center; gap: 0.4rem; color: var(--text-2); }
+.tip .tl i { display: inline-block; width: 12px; height: 3px; border-radius: 2px; }
+@media (max-width: 440px) {
+  .facet { --labelw: 0px; }
+  .row { grid-template-columns: 1fr var(--gutter); min-height: 0; padding-top: 0.25rem; }
+  .row .name { grid-column: 1 / -1; padding: 0 0 0.2rem 0.4rem; }
+  .plot { row-gap: 0.5rem; }
+  .axis { grid-template-columns: 1fr var(--gutter); }
+  .ticks { grid-column: 1; }
+}
+
+/* ---------- Integrity, models, contact, footer ---------- */
+.split { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 360px), 1fr)); gap: 1.5rem 3rem; align-items: start; margin-top: 2rem; }
+.figure-block { padding: clamp(1.25rem, 2vw, 1.75rem); }
+.figure-big { font-size: clamp(2.5rem, 2rem + 2.5vw, 3.25rem); font-weight: 600; line-height: 1.05; letter-spacing: -0.02em; }
+.figure-cap { color: var(--text-2); margin-top: 0.5rem; font-size: 0.9375rem; }
+.checklist { list-style: none; margin: 1.25rem 0 0; padding: 0; display: grid; gap: 0.75rem; }
+.checklist li { display: grid; grid-template-columns: 20px 1fr; gap: 0.75rem; color: var(--text-2); }
+.checklist svg { width: 20px; height: 20px; color: var(--accent); margin-top: 0.2em; }
+.model-row { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1.25rem; }
+.pill { display: inline-flex; align-items: center; min-height: 36px; padding: 0.25rem 0.875rem; border-radius: 999px; border: 1px solid var(--border); background: var(--surface); color: var(--text-2); font-size: 0.9375rem; font-weight: 500; }
+.contact-card { padding: clamp(1.5rem, 3vw, 2.5rem); display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr)); gap: 1.5rem 2.5rem; align-items: center; margin-top: 2rem; }
+.contact-card .lead { margin-top: 0.75rem; }
+.contact-actions { display: flex; flex-wrap: wrap; gap: 0.75rem; justify-self: start; }
+.contact-addr { font-size: 1.0625rem; font-weight: 600; overflow-wrap: anywhere; }
+.site-footer { border-top: 1px solid var(--border); padding-block: 2rem 3rem; color: var(--muted); font-size: 0.9375rem; }
+.foot small { font-size: inherit; }
+.foot { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.75rem 2rem; align-items: center; }
+.foot ul { display: flex; flex-wrap: wrap; gap: 0.25rem 1rem; list-style: none; margin: 0; padding: 0; }
+.foot a { color: var(--text-2); text-decoration: none; display: inline-flex; align-items: center; min-height: 44px; }
+.foot a:hover { color: var(--text); text-decoration: underline; }
+@media (forced-colors: active) {
+  .bar, .swatch { forced-color-adjust: none; }
+  .s1 { background: Highlight; } .s2 { background: GrayText; } .s3 { background: CanvasText; opacity: 0.5; }
+}
+@media print { .site-header, .theme-btn, .tip { display: none !important; } .section { padding-block: 1.5rem; } }
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="site-header" id="top">
+  <div class="container nav">
+    <a class="brand" href="#top" aria-label="HELIX home">
+      <svg viewBox="0 0 64 64" aria-hidden="true" focusable="false"><rect width="64" height="64" rx="14" fill="var(--accent)"/><path d="M18 16c14 0 14 32 28 32M46 16c-14 0-14 32-28 32" fill="none" stroke="var(--on-accent)" stroke-width="5" stroke-linecap="round"/></svg>
+      <span>HELIX</span>
+    </a>
+    <nav aria-label="Primary">
+      <ul class="nav-links">
+        <li><a href="#top">Home</a></li>
+        <li><a href="#product">Product</a></li>
+        <li><a href="#results">Results</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </nav>
+    <button class="theme-btn" id="themeBtn" type="button" aria-label="Toggle dark mode" title="Toggle dark mode">
+      <svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+      <svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+    </button>
+  </div>
+</header>
+
+<main id="main">
+
+<!-- ============ Hero ============ -->
+<section class="hero">
+  <div class="container">
+    <h1>A research harness that gets better at research.</h1>
+    <p class="lead">Give HELIX a scientific task, its data and a scoring rule, and it runs the research loop end to end: it proposes approaches, builds and trains them, scores them for real, keeps what works, and audits its own results before it reports back.</p>
+    <div class="cta-row">
+      <a class="btn btn-primary" href="#contact" data-cta="primary">Request early access</a>
+      <a class="btn btn-secondary" href="#results">See the results</a>
+    </div>
+    <p class="hero-note">Model-agnostic. Runs on Claude today and on open-weight models such as DeepSeek.</p>
+  </div>
+</section>
+
+<!-- ============ Product ============ -->
+<section class="section" id="product">
+  <div class="container">
+    <p class="eyebrow">What it does</p>
+    <h2 class="prose">From task to audited result, without a human in the loop.</h2>
+    <p class="lead prose">HELIX treats research as a loop to be run, measured and improved, not a script to be executed once.</p>
+    <div class="tiles">
+      <article class="card tile">
+        <div class="tile-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 3v6h-6"/></svg></div>
+        <h3>Runs the whole loop</h3>
+        <p>Proposes candidate approaches, implements them, trains and evaluates them, then iterates. Two independent solvers work each task and their best results are merged.</p>
+      </article>
+      <article class="card tile">
+        <div class="tile-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V5"/><path d="M4 19h16"/><path d="M8 15v-4M12 15V7M16 15v-6"/></svg></div>
+        <h3>Scores everything for real</h3>
+        <p>Every candidate is run against your actual data and your actual scoring rule. Nothing is kept on the strength of a plausible-sounding argument; only measured improvement survives.</p>
+      </article>
+      <article class="card tile">
+        <div class="tile-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 5-3.5 8.5-7 10-3.5-1.5-7-5-7-10V6z"/><path d="M9 12l2 2 4-4"/></svg></div>
+        <h3>Audits itself before it reports</h3>
+        <p>Before a number reaches you, HELIX re-checks it against the standard we hold ourselves to. Results that fail that check are withdrawn, however good they look.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============ Results ============ -->
+<section class="section" id="results">
+  <div class="container">
+    <p class="eyebrow">Results</p>
+    <h2 class="prose">NatureBench-25, September 2026</h2>
+    <p class="lead prose">25 scientific tasks, one cold run per task at the track's 4-hour reference budget. HELIX ran on Claude Opus 5. The two comparators below use the same 25 tasks and the same base model.</p>
+    <div class="disclosure" role="note">
+      <strong>Self-reported figures.</strong> Submitted to the NatureBench maintainers for review in September 2026; not yet on the public leaderboard. Numbers on this page are ours until the maintainers publish theirs.
+    </div>
+
+    <div class="kpis">
+      <div class="card kpi">
+        <div class="kpi-label">Match-SOTA rate</div>
+        <div class="kpi-value">72%</div>
+        <div class="kpi-sub">18 of 25 tasks met the track's Match-SOTA criterion</div>
+        <div class="kpi-delta"><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M6 1l5 6H1z" fill="currentColor"/></svg>+4 pts <span>vs the Claude Code entry (68%)</span></div>
+      </div>
+      <div class="card kpi">
+        <div class="kpi-label">Surpass-SOTA rate</div>
+        <div class="kpi-value">28%</div>
+        <div class="kpi-sub">7 of 25 tasks met the track's Surpass-SOTA criterion</div>
+        <div class="kpi-delta"><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M6 1l5 6H1z" fill="currentColor"/></svg>+4 pts <span>vs the AIBuildAI 2.5 entry (24%)</span></div>
+      </div>
+      <div class="card kpi">
+        <div class="kpi-label">Head-to-head vs Claude Code</div>
+        <div class="kpi-value">12 – 6 – 7</div>
+        <div class="kpi-sub">wins – ties – losses, task by task</div>
+      </div>
+      <div class="card kpi">
+        <div class="kpi-label">Head-to-head vs AIBuildAI 2.5</div>
+        <div class="kpi-value">23 – 1 – 1</div>
+        <div class="kpi-sub">wins – ties – losses, task by task</div>
+      </div>
+    </div>
+
+    <figure class="card chart" aria-labelledby="chartTitle" aria-describedby="chartDesc">
+      <div class="chart-head">
+        <div>
+          <div class="chart-title" id="chartTitle">Share of the 25 tasks, by entry</div>
+          <div class="chart-sub" id="chartDesc">Same tasks, same base model. Higher is better; values are per cent of 25 tasks.</div>
+        </div>
+        <ul class="legend" aria-label="Series">
+          <li><span class="swatch s1" aria-hidden="true"></span>HELIX · Claude Opus 5</li>
+          <li><span class="swatch s2" aria-hidden="true"></span>Claude Code (official entry)</li>
+          <li><span class="swatch s3" aria-hidden="true"></span>AIBuildAI 2.5</li>
+        </ul>
+      </div>
+
+      <div class="facets">
+        <div class="facet">
+          <div class="facet-title">Match-SOTA <small>share of the 25 tasks</small></div>
+          <div class="plot" role="list">
+            <div class="row is-hero" role="listitem" tabindex="0" data-series="HELIX" data-facet="Match-SOTA" data-n="18" aria-label="HELIX, Match-SOTA: 72 per cent, 18 of 25 tasks" style="--v:72">
+              <span class="name">HELIX</span><span class="lane"><span class="bar s1"></span><span class="val">72%</span></span><span></span>
+            </div>
+            <div class="row" role="listitem" tabindex="0" data-series="Claude Code" data-facet="Match-SOTA" aria-label="Claude Code, Match-SOTA: 68 per cent" style="--v:68">
+              <span class="name">Claude Code</span><span class="lane"><span class="bar s2"></span><span class="val">68%</span></span><span></span>
+            </div>
+            <div class="row" role="listitem" tabindex="0" data-series="AIBuildAI 2.5" data-facet="Match-SOTA" data-n="16" aria-label="AIBuildAI 2.5, Match-SOTA: 64 per cent, 16 of 25 tasks" style="--v:64">
+              <span class="name">AIBuildAI 2.5</span><span class="lane"><span class="bar s3"></span><span class="val">64%</span></span><span></span>
+            </div>
+          </div>
+          <div class="axis" aria-hidden="true"><div class="ticks"><span style="left:0">0</span><span style="left:25%">25</span><span style="left:50%">50</span><span style="left:75%">75</span><span style="left:100%">100%</span></div></div>
+        </div>
+
+        <div class="facet">
+          <div class="facet-title">Surpass-SOTA <small>share of the 25 tasks</small></div>
+          <div class="plot" role="list">
+            <div class="row is-hero" role="listitem" tabindex="0" data-series="HELIX" data-facet="Surpass-SOTA" data-n="7" aria-label="HELIX, Surpass-SOTA: 28 per cent, 7 of 25 tasks" style="--v:28">
+              <span class="name">HELIX</span><span class="lane"><span class="bar s1"></span><span class="val">28%</span></span><span></span>
+            </div>
+            <div class="row" role="listitem" tabindex="0" data-series="Claude Code" data-facet="Surpass-SOTA" aria-label="Claude Code, Surpass-SOTA: 20 per cent" style="--v:20">
+              <span class="name">Claude Code</span><span class="lane"><span class="bar s2"></span><span class="val">20%</span></span><span></span>
+            </div>
+            <div class="row" role="listitem" tabindex="0" data-series="AIBuildAI 2.5" data-facet="Surpass-SOTA" data-n="6" aria-label="AIBuildAI 2.5, Surpass-SOTA: 24 per cent, 6 of 25 tasks" style="--v:24">
+              <span class="name">AIBuildAI 2.5</span><span class="lane"><span class="bar s3"></span><span class="val">24%</span></span><span></span>
+            </div>
+          </div>
+          <div class="axis" aria-hidden="true"><div class="ticks"><span style="left:0">0</span><span style="left:25%">25</span><span style="left:50%">50</span><span style="left:75%">75</span><span style="left:100%">100%</span></div></div>
+        </div>
+      </div>
+
+      <figcaption class="chart-foot">Match-SOTA and Surpass-SOTA are the track's own criteria, as defined by NatureBench. Comparator figures are the Claude Code and AIBuildAI 2.5 entries on the same 25 tasks and base model; task counts are shown where the entry reports them.</figcaption>
+
+      <details class="tableview">
+        <summary>View the data as a table</summary>
+        <div class="table-wrap">
+          <table>
+            <caption>NatureBench-25, September 2026, same 25 tasks and base model. Self-reported; under review.</caption>
+            <thead>
+              <tr><th scope="col">Entry</th><th scope="col" class="num">Match-SOTA</th><th scope="col" class="num">Surpass-SOTA</th><th scope="col" class="num">HELIX head-to-head (W – T – L)</th></tr>
+            </thead>
+            <tbody>
+              <tr><th scope="row">HELIX · Claude Opus 5</th><td class="num">72% (18/25)</td><td class="num">28% (7/25)</td><td class="num">—</td></tr>
+              <tr><th scope="row">Claude Code (official entry)</th><td class="num">68%</td><td class="num">20%</td><td class="num">12 – 6 – 7</td></tr>
+              <tr><th scope="row">AIBuildAI 2.5</th><td class="num">64% (16/25)</td><td class="num">24% (6/25)</td><td class="num">23 – 1 – 1</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </details>
+    </figure>
+  </div>
+</section>
+
+<!-- ============ Integrity ============ -->
+<section class="section" id="integrity">
+  <div class="container">
+    <p class="eyebrow">Integrity</p>
+    <h2 class="prose">We audit ourselves before we report.</h2>
+    <div class="split">
+      <div class="prose stack">
+        <p class="lead">A research system that only reports its wins is not a research system. Before the NatureBench-25 figures above were submitted, HELIX's own audit went back over every result it had produced.</p>
+        <p>It excluded seven candidate results it had produced across its runs, including its single highest score, because they could not be cleared to the standard we hold ourselves to. The figures above are over all 25 tasks and were computed after those exclusions, not before them.</p>
+        <ul class="checklist">
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20 6L9 17l-5-5"/></svg><span>Every reported score was measured against the task's real scoring rule, not estimated.</span></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20 6L9 17l-5-5"/></svg><span>Results that failed the audit were withdrawn before submission, regardless of how good they looked.</span></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20 6L9 17l-5-5"/></svg><span>The remaining figures were handed to the benchmark maintainers for independent review.</span></li>
+        </ul>
+      </div>
+      <div class="card figure-block">
+        <div class="figure-big">7 withdrawn</div>
+        <p class="figure-cap">of the results HELIX produced on NatureBench-25 were excluded by its own audit before submission, including its single highest score.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ Models ============ -->
+<section class="section" id="models">
+  <div class="container">
+    <p class="eyebrow">Models</p>
+    <h2 class="prose">Bring the model you trust.</h2>
+    <p class="lead prose">HELIX is model-agnostic. The NatureBench-25 results above were produced with Claude Opus 5; it also runs on open-weight models such as DeepSeek.</p>
+    <div class="model-row" aria-label="Supported model families">
+      <span class="pill">Claude</span>
+      <span class="pill">DeepSeek</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============ Contact ============ -->
+<section class="section" id="contact">
+  <div class="container">
+    <p class="eyebrow">Contact</p>
+    <h2 class="prose">Early access</h2>
+    <div class="card contact-card">
+      <div>
+        <p class="lead" id="contactText">Early-access requests will open shortly. Check back here for the address.</p>
+      <noscript><p class="contact-addr mt-2">Early-access requests: <a href="mailto:yang_xinyu@a-star.edu.sg?subject=HELIX%20early%20access">yang_xinyu@a-star.edu.sg</a></p></noscript>
+        <p class="contact-addr mt-2" id="contactAddr" hidden></p>
+      </div>
+      <div class="contact-actions">
+        <a class="btn btn-primary" href="#contact" id="contactBtn" data-cta="primary">Request early access</a>
+        <a class="btn btn-secondary" href="#results">Review the results</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="container foot">
+    <small class="copy">© 2026 A*STAR IAIC · Dr. Xinyu Yang. All rights reserved.</small>
+    <ul>
+      <li><a href="#top">Home</a></li>
+      <li><a href="#product">Product</a></li>
+      <li><a href="#results">Results</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </div>
+</footer>
+
+<div class="tip" id="tip" role="tooltip" aria-hidden="true"><span class="tv" id="tipVal"></span><span class="tl"><i id="tipKey"></i><span id="tipLabel"></span></span></div>
+
+<script>
+/* ---------- Site configuration ---------- */
+/* Set contact to an e-mail address to enable mailto links. Leave empty until early access opens. */
+const SITE = { contact: "yang_xinyu@a-star.edu.sg" };
+
+(function () {
+  "use strict";
+  var doc = document;
+
+  /* ----- Contact rendering (from the single SITE constant) ----- */
+  var addr = (SITE.contact || "").trim();
+  var text = doc.getElementById("contactText");
+  var addrEl = doc.getElementById("contactAddr");
+  var ctas = doc.querySelectorAll('[data-cta="primary"]');
+  if (addr) {
+    var href = "mailto:" + addr + "?subject=" + encodeURIComponent("HELIX early access");
+    text.textContent = "Tell us about the task, the data you have and how it is scored, and we will be in touch.";
+    addrEl.textContent = addr;
+    addrEl.hidden = false;
+    for (var i = 0; i < ctas.length; i++) { ctas[i].setAttribute("href", href); }
+  }
+
+  /* ----- Theme toggle (dark is a selected token set, remembered locally) ----- */
+  var root = doc.documentElement;
+  var btn = doc.getElementById("themeBtn");
+  var stored = null;
+  try { stored = window.localStorage.getItem("helix-theme"); } catch (e) { stored = null; }
+  if (stored === "dark" || stored === "light") { root.setAttribute("data-theme", stored); }
+  function currentTheme() {
+    var t = root.getAttribute("data-theme");
+    if (t === "dark" || t === "light") { return t; }
+    return (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) ? "dark" : "light";
+  }
+  if (btn) {
+    btn.addEventListener("click", function () {
+      var next = currentTheme() === "dark" ? "light" : "dark";
+      root.setAttribute("data-theme", next);
+      try { window.localStorage.setItem("helix-theme", next); } catch (e) { /* storage unavailable */ }
+    });
+  }
+
+  /* ----- Chart hover / focus tooltip (enhances; every value is also a direct label and in the table) ----- */
+  var tip = doc.getElementById("tip");
+  var tipVal = doc.getElementById("tipVal");
+  var tipKey = doc.getElementById("tipKey");
+  var tipLabel = doc.getElementById("tipLabel");
+  var rows = doc.querySelectorAll(".plot .row");
+  var seriesClass = { "HELIX": "s1", "Claude Code": "s2", "AIBuildAI 2.5": "s3" };
+
+  function fill(row) {
+    var v = row.style.getPropertyValue("--v").trim();
+    var n = row.getAttribute("data-n");
+    var s = row.getAttribute("data-series");
+    var f = row.getAttribute("data-facet");
+    tipVal.textContent = n ? v + "%  (" + n + " of 25 tasks)" : v + "%";
+    tipLabel.textContent = s + " · " + f;
+    tipKey.className = seriesClass[s] || "";
+  }
+  function place(x, y) {
+    var pad = 12;
+    var w = tip.offsetWidth, h = tip.offsetHeight;
+    var vw = window.innerWidth, vh = window.innerHeight;
+    var left = x + pad, top = y + pad;
+    if (left + w > vw - 8) { left = Math.max(8, x - w - pad); }
+    if (top + h > vh - 8) { top = Math.max(8, y - h - pad); }
+    tip.style.left = left + "px";
+    tip.style.top = top + "px";
+  }
+  function show(row) { fill(row); tip.classList.add("show"); tip.setAttribute("aria-hidden", "false"); }
+  function hide() { tip.classList.remove("show"); tip.setAttribute("aria-hidden", "true"); }
+
+  for (var r = 0; r < rows.length; r++) {
+    (function (row) {
+      row.addEventListener("pointerenter", function (e) { show(row); place(e.clientX, e.clientY); });
+      row.addEventListener("pointermove", function (e) { place(e.clientX, e.clientY); });
+      row.addEventListener("pointerleave", hide);
+      row.addEventListener("focus", function () {
+        show(row);
+        var b = row.querySelector(".bar").getBoundingClientRect();
+        place(b.left + Math.min(b.width, 40), b.bottom);
+      });
+      row.addEventListener("blur", hide);
+    })(rows[r]);
+  }
+  doc.addEventListener("keydown", function (e) { if (e.key === "Escape") { hide(); } });
+  window.addEventListener("scroll", hide, { passive: true });
+})();
+</script>
+</body>
+</html>
