@@ -301,16 +301,22 @@ caption { text-align: left; color: var(--muted); font-size: 0.9375rem; padding-b
   .loop-verbs span { font-size: .9375rem; color: var(--text-2); background: var(--surface-2);
     border: 1px solid var(--border); border-radius: 999px; padding: .2rem .6rem; }
   .section.alt .loop-verbs span { background: var(--surface); }
-  .fig { margin: 3.5rem 0 0; }
-  .loopsvg { display: block; width: 100%; max-width: 1000px; height: auto; margin-inline: auto; }
-  .eight { fill: none; stroke: url(#lobegrad); stroke-width: 3; stroke-linecap: round; }
-  .node { fill: var(--surface); stroke: var(--text-2); stroke-width: 3; }
-  .lobelab { font-family: inherit; font-size: 25px; font-weight: 600; text-anchor: middle; }
+  .fig { margin: 4.5rem 0 0; }
+  .loopsvg { display: block; width: 100%; max-width: 1040px; height: auto; margin-inline: auto; overflow: visible; }
+  .eight { fill: none; stroke: url(#lg); stroke-width: 2.75; stroke-linecap: round; }
+  .glow  { fill: none; stroke: var(--accent); stroke-width: 10; opacity: .13; }
+  .spark { fill: var(--accent); }
+  .spark.core { fill: var(--surface); }
+  .node-halo { fill: var(--accent); opacity: .10; }
+  .node { fill: var(--surface); stroke: var(--accent); stroke-width: 2.5; }
+  .lobelab { font-family: inherit; font-size: 27px; font-weight: 600; letter-spacing: -0.02em;
+    text-anchor: middle; fill: var(--text); }
+  .lab-a { fill: var(--accent); }
+  .lab-b { fill: var(--text); }
   .lobesub { font-family: inherit; font-size: 17px; text-anchor: middle; fill: var(--text-2); }
-  .handoff { font-family: inherit; font-size: 16px; text-anchor: middle; fill: var(--muted); }
-  .lab-a.lobelab { fill: var(--accent); }
-  .lab-b.lobelab { fill: var(--text); }
-  @media (max-width: 620px) { .handoff { display: none; } .lobelab { font-size: 34px; } .lobesub { font-size: 24px; } }
+  .handoff { font-family: inherit; font-size: 15.5px; text-anchor: middle; fill: var(--muted); }
+  @media (max-width: 640px) { .handoff { display: none; }
+    .lobelab { font-size: 36px; } .lobesub { font-size: 23px; } }
   #recursive .split h3 { margin: 0 0 .4rem; }
   .foot small.copy { font-size: inherit; }
 
@@ -333,7 +339,40 @@ caption { text-align: left; color: var(--muted); font-size: 0.9375rem; padding-b
   .contact-card { grid-template-columns: 1fr; text-align: center; justify-items: center;
     max-width: 720px; margin-inline: auto; }
   .contact-card .cta-row { justify-content: center; }
+
+  /* ============ Apple-leaning scale, rhythm, materials ============ */
+  body { font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text",
+      "Inter", "Helvetica Neue", Helvetica, Arial, sans-serif; }
+  h1 { font-size: clamp(2.7rem, 1.3rem + 5.6vw, 5.5rem); font-weight: 600;
+    letter-spacing: -0.034em; line-height: 1.02; max-width: 17ch; }
+  h2 { font-size: clamp(2rem, 1.15rem + 3.4vw, 3.6rem); font-weight: 600;
+    letter-spacing: -0.028em; line-height: 1.06; }
+  h3 { font-size: clamp(1.1rem, 1rem + 0.45vw, 1.35rem); font-weight: 600; letter-spacing: -0.014em; }
+  .lead { font-size: clamp(1.15rem, 1rem + 0.7vw, 1.6rem); line-height: 1.42;
+    letter-spacing: -0.012em; }
+  .eyebrow { font-size: .8125rem; font-weight: 600; letter-spacing: .12em; }
+  .section { padding-block: clamp(5.5rem, 8vw, 11rem); }
+  .section > .container > h2 { max-width: 19ch; margin-top: 1.1rem; }
+  .section > .container > .lead { max-width: 48ch; margin-top: 1.6rem; }
+  .hero { padding-block: clamp(6rem, 11vw, 13rem) clamp(4rem, 7vw, 8rem); }
+  .cta-row { margin-top: 2.6rem; gap: .9rem; }
+  .btn { border-radius: 980px; padding: .82rem 1.65rem; font-size: 1.0625rem;
+    font-weight: 500; letter-spacing: -0.01em; }
+  .tiles, .loops, .split { gap: 1.25rem; margin-top: 3.5rem; }
+  .card { border-radius: 22px; padding: clamp(1.75rem, 2.2vw, 2.5rem);
+    box-shadow: 0 1px 2px rgba(0,0,0,.04), 0 14px 34px -14px rgba(0,0,0,.12); }
+  .card h3 + p, .card .loop-verbs + p { margin-top: 1rem; }
+  .pill { border-radius: 980px; }
+  /* scroll reveal, JS-gated so no-JS shows everything */
+  .js .reveal { opacity: 0; transform: translateY(20px);
+    transition: opacity .8s cubic-bezier(.22,.61,.36,1), transform .8s cubic-bezier(.22,.61,.36,1); }
+  .js .reveal.in { opacity: 1; transform: none; }
+  @media (prefers-reduced-motion: reduce) {
+    .js .reveal { opacity: 1; transform: none; transition: none; }
+    .spark { display: none; }
+  }
 </style>
+<script>document.documentElement.classList.add("js");</script>
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
@@ -380,7 +419,7 @@ caption { text-align: left; color: var(--muted); font-size: 0.9375rem; padding-b
     <p class="eyebrow">What it does</p>
     <h2 class="prose">From task to audited result, without a human in the loop.</h2>
     <p class="lead prose">HELIX treats research as a loop to be run, measured and improved, not a script to be executed once.</p>
-    <div class="tiles">
+    <div class="tiles reveal">
       <article class="card tile">
         <div class="tile-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 3v6h-6"/></svg></div>
         <h3>Runs the whole loop</h3>
@@ -409,7 +448,7 @@ caption { text-align: left; color: var(--muted); font-size: 0.9375rem; padding-b
     <p class="lead prose">Most agents run a single loop: try something, look at the result, try again.
       HELIX runs two, and the outer one is what makes the system compound.</p>
 
-    <div class="loops">
+    <div class="loops reveal">
       <div class="card loop-card">
         <h3>The outer loop &mdash; the science</h3>
         <p class="loop-verbs"><span>gather evidence</span><span>diagnose</span><span>hypothesise</span><span>validate</span><span>remember</span></p>
@@ -424,22 +463,56 @@ caption { text-align: left; color: var(--muted); font-size: 0.9375rem; padding-b
       </div>
     </div>
 
-    <figure class="fig">
-      <svg class="loopsvg" viewBox="105 45 790 315" role="img" aria-labelledby="loopttl loopdesc">
-        <defs><linearGradient id="lobegrad" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="var(--accent)"/><stop offset="48%" stop-color="var(--accent)"/><stop offset="52%" stop-color="var(--series-2)"/><stop offset="100%" stop-color="var(--series-2)"/></linearGradient></defs><title id="loopttl">Two loops crossing in a horizontal figure of eight</title>
+    <figure class="fig reveal">
+      <svg class="loopsvg" viewBox="60 20 880 380" role="img" aria-labelledby="loopttl loopdesc">
+        <title id="loopttl">Two loops crossing in a horizontal figure of eight</title>
         <desc id="loopdesc">The outer science loop and the inner engineering loop drawn as one continuous
           figure-of-eight that crosses in the middle, where the task brief passes one way and validated
           evidence passes back the other.</desc>
-        <path class="eight" d="M290 110 C 390 110, 440 200, 500 200 C 560 200, 610 110, 710 110
-                               C 850 110, 880 290, 710 290 C 610 290, 560 200, 500 200
-                               C 440 200, 390 290, 290 290 C 120 290, 150 110, 290 110 Z"/>
-        <circle class="node" cx="500" cy="200" r="8"/>
-        <text class="lobelab lab-a" x="272" y="192">outer loop</text>
-        <text class="lobesub lab-a" x="272" y="222">the science</text>
-        <text class="lobelab lab-b" x="728" y="192">inner loop</text>
-        <text class="lobesub lab-b" x="728" y="222">the engineering</text>
-        <text class="handoff" x="500" y="72">task brief &#8595;</text>
-        <text class="handoff" x="500" y="342">&#8593; validated evidence</text>
+        <defs>
+          <linearGradient id="lg" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%"   stop-color="var(--accent)" stop-opacity=".35"/>
+            <stop offset="26%"  stop-color="var(--accent)"/>
+            <stop offset="50%"  stop-color="var(--accent)"/>
+            <stop offset="54%"  stop-color="var(--series-2)"/>
+            <stop offset="76%"  stop-color="var(--series-2)"/>
+            <stop offset="100%" stop-color="var(--series-2)" stop-opacity=".35"/>
+          </linearGradient>
+          <filter id="soft" x="-25%" y="-40%" width="150%" height="180%">
+            <feGaussianBlur stdDeviation="14"/>
+          </filter>
+          <filter id="dotglow" x="-300%" y="-300%" width="700%" height="700%">
+            <feGaussianBlur stdDeviation="5"/>
+          </filter>
+          <path id="eightpath"
+            d="M290 110 C 390 110, 440 200, 500 200 C 560 200, 610 110, 710 110
+               C 850 110, 880 290, 710 290 C 610 290, 560 200, 500 200
+               C 440 200, 390 290, 290 290 C 120 290, 150 110, 290 110 Z"/>
+        </defs>
+
+        <use href="#eightpath" class="glow" filter="url(#soft)"/>
+        <use href="#eightpath" class="eight"/>
+
+        <circle class="spark" r="7" filter="url(#dotglow)">
+          <animateMotion dur="9s" repeatCount="indefinite" rotate="auto">
+            <mpath href="#eightpath"/>
+          </animateMotion>
+        </circle>
+        <circle class="spark core" r="3.2">
+          <animateMotion dur="9s" repeatCount="indefinite" rotate="auto">
+            <mpath href="#eightpath"/>
+          </animateMotion>
+        </circle>
+
+        <circle class="node-halo" cx="500" cy="200" r="15"/>
+        <circle class="node" cx="500" cy="200" r="6.5"/>
+
+        <text class="lobelab lab-a" x="272" y="190">outer loop</text>
+        <text class="lobesub"      x="272" y="223">the science</text>
+        <text class="lobelab lab-b" x="728" y="190">inner loop</text>
+        <text class="lobesub"      x="728" y="223">the engineering</text>
+        <text class="handoff" x="500" y="66">task brief &#8595;</text>
+        <text class="handoff" x="500" y="348">&#8593; validated evidence</text>
       </svg>
       <figcaption class="chart-foot prose">Down the middle goes the problem, how answers are scored and how
         much effort to spend. Back up comes what won, what failed, and how far the measured result diverged
@@ -452,7 +525,7 @@ caption { text-align: left; color: var(--muted); font-size: 0.9375rem; padding-b
   <div class="container">
     <p class="eyebrow">Recursive self-improvement</p>
     <h2 class="prose">The system doing the research is the system being improved by it.</h2>
-    <div class="split">
+    <div class="split reveal">
       <div>
         <h3>Within a run</h3>
         <p>Every measured result changes what is tried next. Progress inside a problem is driven by
@@ -475,7 +548,7 @@ caption { text-align: left; color: var(--muted); font-size: 0.9375rem; padding-b
     <p class="lead prose">A model fitted to one dataset is worth something once. A heuristic &mdash; a
       compact, reusable judgement distilled from experience &mdash; is worth something every time a
       similar problem appears.</p>
-    <div class="tiles">
+    <div class="tiles reveal">
       <div class="card"><h3>What to try first</h3><p>Which family of approaches tends to pay off for a
         given shape of data, and which is usually a waste of the first hour.</p></div>
       <div class="card"><h3>What to distrust</h3><p>When a result is too good to be true, and which
@@ -496,7 +569,7 @@ caption { text-align: left; color: var(--muted); font-size: 0.9375rem; padding-b
       <p class="prose">Results that cannot be cleared are withheld — including its own best ones. That has happened, and it is the point: an agent that cannot rule against itself cannot be trusted when it rules in its own favour.</p>
       <p class="prose">Every score HELIX reports was measured against the real scoring rule for the problem, never estimated.</p>
 
-    <div class="split">
+    <div class="split reveal">
       <div class="prose stack">
         <ul class="checklist">
           <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
@@ -511,7 +584,7 @@ caption { text-align: left; color: var(--muted); font-size: 0.9375rem; padding-b
     <p class="eyebrow">Models</p>
     <h2 class="prose">Bring the model you trust.</h2>
     <p class="lead prose">HELIX is model-agnostic. It runs on frontier models such as Claude and on open-weight models such as DeepSeek.</p>
-    <div class="model-row" aria-label="Supported model families">
+    <div class="model-row reveal" aria-label="Supported model families">
       <span class="pill">Claude</span>
       <span class="pill">DeepSeek</span>
     </div>
@@ -594,9 +667,21 @@ const SITE = { contact: "yang_xinyu@a-star.edu.sg" };
     });
   }
 
-  /* ----- Chart hover / focus tooltip (enhances; every value is also a direct label and in the table) ----- */
-  doc.addEventListener("keydown", function (e) { if (e.key === "Escape") { hide(); } });
-  window.addEventListener("scroll", hide, { passive: true });
+})();
+</script>
+<script>
+(function () {
+  var els = document.querySelectorAll(".reveal");
+  if (!("IntersectionObserver" in window)) {
+    Array.prototype.forEach.call(els, function (e) { e.classList.add("in"); });
+    return;
+  }
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (en) {
+      if (en.isIntersecting) { en.target.classList.add("in"); io.unobserve(en.target); }
+    });
+  }, { rootMargin: "0px 0px -10% 0px", threshold: 0.05 });
+  Array.prototype.forEach.call(els, function (e) { io.observe(e); });
 })();
 </script>
 </body>
