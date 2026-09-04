@@ -89,6 +89,10 @@ body {
 }
 h1, h2, h3 { margin: 0; line-height: 1.15; letter-spacing: -0.01em; overflow-wrap: anywhere; }
 p { margin: 0; overflow-wrap: anywhere; }
+.prose + .prose, .lead + .prose, .card p + p, #integrity p + p { margin-top: 1.15rem; }
+.section > .container > h2 { margin-top: .5rem; }
+.section > .container > .lead { margin-top: 1.25rem; }
+.tiles + .prose, .loops + .fig, .fig + .prose { margin-top: 2.25rem; }
 a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 0.15em; }
 a:hover { color: var(--accent-hover); }
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
@@ -98,9 +102,9 @@ a:hover { color: var(--accent-hover); }
   border: 1px solid var(--border); border-radius: 8px; z-index: 100;
 }
 .skip:focus { top: 1rem; }
-.container { width: 100%; max-width: 1120px; margin-inline: auto; padding-inline: clamp(1rem, 4vw, 2.5rem); }
+.container { width: 100%; max-width: 1180px; margin-inline: auto; padding-inline: clamp(1rem, 4vw, 2.5rem); }
 .prose { max-width: 65ch; }
-.section { padding-block: clamp(3rem, 4vw + 1.5rem, 6rem); }
+.section { padding-block: clamp(4rem, 5vw + 2rem, 8rem); }
 .section + .section { border-top: 1px solid var(--border); }
 .eyebrow { font-size: 0.875rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.75rem; }
 h2 { font-size: clamp(1.5rem, 1.1rem + 1.6vw, 2.25rem); font-weight: 600; }
@@ -167,7 +171,11 @@ h2 { font-size: clamp(1.5rem, 1.1rem + 1.6vw, 2.25rem); font-weight: 600; }
 .hero-note { margin-top: 1.25rem; font-size: 0.9375rem; color: var(--muted); max-width: 60ch; }
 
 /* ---------- Cards, tiles, KPI row ---------- */
-.card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; box-shadow: var(--shadow); }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 18px;
+    box-shadow: var(--shadow); padding: clamp(1.4rem, 1.6vw, 2rem); height: 100%;
+    display: flex; flex-direction: column; }
+  .card > p:last-child { margin-bottom: 0; }
+  .tiles, .loops, .split { align-items: stretch; }
 .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); gap: 1rem; margin-top: 2rem; }
 .tile { padding: clamp(1.25rem, 2vw, 1.75rem); }
 .tile-icon { width: 40px; height: 40px; display: grid; place-items: center; border-radius: 10px; background: var(--surface-2); color: var(--accent); margin-bottom: 1rem; }
@@ -293,22 +301,38 @@ caption { text-align: left; color: var(--muted); font-size: 0.9375rem; padding-b
   .loop-verbs span { font-size: .9375rem; color: var(--text-2); background: var(--surface-2);
     border: 1px solid var(--border); border-radius: 999px; padding: .2rem .6rem; }
   .section.alt .loop-verbs span { background: var(--surface); }
-  .fig { margin: 2rem 0 0; }
-  .loopsvg { display: block; width: 100%; max-width: 620px; height: auto; margin-inline: auto; }
-  .ring { fill: none; stroke-width: 2; }
-  .ring.outer { stroke: var(--accent); }
-  .ring.inner { stroke: var(--series-2); }
-  .ringlab { font-size: 15px; text-anchor: middle; fill: var(--text-2);
-    font-family: inherit; dominant-baseline: middle; }
-  .lab-outer { fill: var(--accent); }
-  .lab-inner { fill: var(--series-2); }
-  .handoff { font-size: 14px; fill: var(--muted); font-family: inherit; }
-  .arrow { stroke: var(--muted); stroke-width: 1.5; fill: none; }
-  .arrowhead { fill: var(--muted); }
-  @media (max-width: 480px) { .ringlab, .handoff { display: none; } }
-  .fig .chart-foot { margin-top: 1rem; }
+  .fig { margin: 3.5rem 0 0; }
+  .loopsvg { display: block; width: 100%; max-width: 1000px; height: auto; margin-inline: auto; }
+  .eight { fill: none; stroke: url(#lobegrad); stroke-width: 3; stroke-linecap: round; }
+  .node { fill: var(--surface); stroke: var(--text-2); stroke-width: 3; }
+  .lobelab { font-family: inherit; font-size: 25px; font-weight: 600; text-anchor: middle; }
+  .lobesub { font-family: inherit; font-size: 17px; text-anchor: middle; fill: var(--text-2); }
+  .handoff { font-family: inherit; font-size: 16px; text-anchor: middle; fill: var(--muted); }
+  .lab-a.lobelab { fill: var(--accent); }
+  .lab-b.lobelab { fill: var(--text); }
+  @media (max-width: 620px) { .handoff { display: none; } .lobelab { font-size: 34px; } .lobesub { font-size: 24px; } }
   #recursive .split h3 { margin: 0 0 .4rem; }
   .foot small.copy { font-size: inherit; }
+
+  /* --- composition pass --- */
+  section[id] { scroll-margin-top: 88px; }
+  .section > .container > .eyebrow,
+  .section > .container > h2,
+  .section > .container > .lead { text-align: center; margin-inline: auto; }
+  .section > .container > h2 { max-width: 30ch; }
+  .section > .container > .lead { max-width: 62ch; }
+  .fig .chart-foot { text-align: center; margin-inline: auto; max-width: 68ch; }
+  .tiles + .prose { text-align: center; margin-inline: auto; max-width: 62ch; }
+  #integrity .lead, #integrity .prose { margin-inline: auto; }
+  .hero > .container { text-align: center; }
+  .hero .prose, .hero .lead, .hero .hero-note { margin-inline: auto; }
+  .hero .cta-row { justify-content: center; }
+  h1 { max-width: 24ch; margin-inline: auto; }
+  .model-row { justify-content: center; margin-top: 1.75rem; }
+  /* contact: one centred column instead of a two-up split that reads as misaligned */
+  .contact-card { grid-template-columns: 1fr; text-align: center; justify-items: center;
+    max-width: 720px; margin-inline: auto; }
+  .contact-card .cta-row { justify-content: center; }
 </style>
 </head>
 <body>
@@ -401,22 +425,25 @@ caption { text-align: left; color: var(--muted); font-size: 0.9375rem; padding-b
     </div>
 
     <figure class="fig">
-      <svg class="loopsvg" viewBox="0 0 560 300" role="img" aria-labelledby="loopttl loopdesc">
-        <title id="loopttl">Two nested loops joined by two hand-offs</title>
-        <desc id="loopdesc">An outer science loop and an inner engineering loop. The outer loop passes
-          a task brief down to the inner loop; the inner loop passes validated evidence back up.</desc>
-        <ellipse cx="280" cy="150" rx="250" ry="128" class="ring outer"/>
-        <ellipse cx="280" cy="150" rx="132" ry="66" class="ring inner"/>
-        <text x="280" y="34" class="ringlab lab-outer">outer loop &mdash; the science</text>
-        <text x="280" y="150" class="ringlab lab-inner">inner loop &mdash; the engineering</text>
-        <path d="M236 84 L236 116" class="arrow"/><path d="M236 116 l-5 -9 h10 z" class="arrowhead"/>
-        <text x="228" y="104" class="handoff" text-anchor="end">task brief</text>
-        <path d="M324 216 L324 184" class="arrow"/><path d="M324 184 l-5 9 h10 z" class="arrowhead"/>
-        <text x="332" y="206" class="handoff">validated evidence</text>
+      <svg class="loopsvg" viewBox="105 45 790 315" role="img" aria-labelledby="loopttl loopdesc">
+        <defs><linearGradient id="lobegrad" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="var(--accent)"/><stop offset="48%" stop-color="var(--accent)"/><stop offset="52%" stop-color="var(--series-2)"/><stop offset="100%" stop-color="var(--series-2)"/></linearGradient></defs><title id="loopttl">Two loops crossing in a horizontal figure of eight</title>
+        <desc id="loopdesc">The outer science loop and the inner engineering loop drawn as one continuous
+          figure-of-eight that crosses in the middle, where the task brief passes one way and validated
+          evidence passes back the other.</desc>
+        <path class="eight" d="M290 110 C 390 110, 440 200, 500 200 C 560 200, 610 110, 710 110
+                               C 850 110, 880 290, 710 290 C 610 290, 560 200, 500 200
+                               C 440 200, 390 290, 290 290 C 120 290, 150 110, 290 110 Z"/>
+        <circle class="node" cx="500" cy="200" r="8"/>
+        <text class="lobelab lab-a" x="272" y="192">outer loop</text>
+        <text class="lobesub lab-a" x="272" y="222">the science</text>
+        <text class="lobelab lab-b" x="728" y="192">inner loop</text>
+        <text class="lobesub lab-b" x="728" y="222">the engineering</text>
+        <text class="handoff" x="500" y="72">task brief &#8595;</text>
+        <text class="handoff" x="500" y="342">&#8593; validated evidence</text>
       </svg>
-      <figcaption class="chart-foot prose">The outer loop hands down the problem, how answers are scored and
-        how much effort to spend. The inner loop hands back what won, what failed, and how far the measured
-        result diverged from what was expected &mdash; which is exactly the material the outer loop learns from.</figcaption>
+      <figcaption class="chart-foot prose">Down the middle goes the problem, how answers are scored and how
+        much effort to spend. Back up comes what won, what failed, and how far the measured result diverged
+        from what was expected &mdash; the material the outer loop learns from.</figcaption>
     </figure>
   </div>
 </section>
