@@ -371,6 +371,18 @@ caption { text-align: left; color: var(--muted); font-size: 0.9375rem; padding-b
     .js .reveal { opacity: 1; transform: none; transition: none; }
     .spark { display: none; }
   }
+  /* contact: the address is the focal point, no box, no buttons */
+  #contact .lead { max-width: 40ch; }
+  .mailbig { margin-top: 2.8rem; text-align: center; }
+  .mailbig a { display: inline-block; }
+  .mailbig a { font-size: clamp(1.45rem, .9rem + 2.6vw, 2.85rem); font-weight: 600;
+    letter-spacing: -0.028em; color: var(--accent); text-decoration: none;
+    border-bottom: 2px solid color-mix(in oklab, var(--accent) 28%, transparent);
+    padding-bottom: .12em; transition: border-color .25s ease, opacity .25s ease; }
+  .mailbig a:hover { border-bottom-color: var(--accent); }
+  .mailbig a:focus-visible { outline: 2px solid var(--accent); outline-offset: 6px; border-radius: 4px; }
+  .mailnote { margin-top: 2.2rem; font-size: .9375rem; color: var(--muted);
+    max-width: 46ch; margin-inline: auto; text-align: center; }
 </style>
 <script>document.documentElement.classList.add("js");</script>
 </head>
@@ -596,17 +608,10 @@ caption { text-align: left; color: var(--muted); font-size: 0.9375rem; padding-b
   <div class="container">
     <p class="eyebrow">Contact</p>
     <h2 class="prose">Early access</h2>
-    <div class="card contact-card">
-      <div>
-        <p class="lead" id="contactText">Early-access requests will open shortly. Check back here for the address.</p>
-      <noscript><p class="contact-addr mt-2">Early-access requests: <a href="mailto:yang_xinyu@a-star.edu.sg?subject=HELIX%20early%20access">yang_xinyu@a-star.edu.sg</a></p></noscript>
-        <p class="contact-addr mt-2" id="contactAddr" hidden></p>
-      </div>
-      <div class="contact-actions">
-        <a class="btn btn-primary" href="#contact" id="contactBtn" data-cta="primary">Request early access</a>
-        <a class="btn btn-secondary" href="#heuristics">What it learns</a>
-      </div>
-    </div>
+    <p class="lead prose" id="contactText">Tell us about the task, the data you have and how answers are
+      scored, and we will be in touch.</p>
+    <p class="mailbig"><a id="contactAddr" href="mailto:yang_xinyu@a-star.edu.sg?subject=HELIX%20early%20access">yang_xinyu@a-star.edu.sg</a></p>
+    <p class="mailnote">We read every note. Research groups and teams building on their own data are both welcome.</p>
   </div>
 </section>
 
@@ -624,7 +629,6 @@ caption { text-align: left; color: var(--muted); font-size: 0.9375rem; padding-b
   </div>
 </footer>
 
-<div class="tip" id="tip" role="tooltip" aria-hidden="true"><span class="tv" id="tipVal"></span><span class="tl"><i id="tipKey"></i><span id="tipLabel"></span></span></div>
 
 <script>
 /* ---------- Site configuration ---------- */
