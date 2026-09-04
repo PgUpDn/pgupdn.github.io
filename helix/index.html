@@ -282,6 +282,33 @@ caption { text-align: left; color: var(--muted); font-size: 0.9375rem; padding-b
   .s1 { background: Highlight; } .s2 { background: GrayText; } .s3 { background: CanvasText; opacity: 0.5; }
 }
 @media print { .site-header, .theme-btn, .tip { display: none !important; } .section { padding-block: 1.5rem; } }
+
+  /* --- product sections added in the concept rewrite --- */
+  .section.alt { background: var(--surface-2); }
+  .loops { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr));
+    gap: 1rem; margin-top: 2rem; }
+  .loop-card { padding: clamp(1.25rem, 2vw, 1.75rem); }
+  .loop-card h3 { margin: 0 0 .5rem; }
+  .loop-verbs { display: flex; flex-wrap: wrap; gap: .4rem .5rem; margin: 0 0 .85rem; }
+  .loop-verbs span { font-size: .9375rem; color: var(--text-2); background: var(--surface-2);
+    border: 1px solid var(--border); border-radius: 999px; padding: .2rem .6rem; }
+  .section.alt .loop-verbs span { background: var(--surface); }
+  .fig { margin: 2rem 0 0; }
+  .loopsvg { display: block; width: 100%; max-width: 620px; height: auto; margin-inline: auto; }
+  .ring { fill: none; stroke-width: 2; }
+  .ring.outer { stroke: var(--accent); }
+  .ring.inner { stroke: var(--series-2); }
+  .ringlab { font-size: 15px; text-anchor: middle; fill: var(--text-2);
+    font-family: inherit; dominant-baseline: middle; }
+  .lab-outer { fill: var(--accent); }
+  .lab-inner { fill: var(--series-2); }
+  .handoff { font-size: 14px; fill: var(--muted); font-family: inherit; }
+  .arrow { stroke: var(--muted); stroke-width: 1.5; fill: none; }
+  .arrowhead { fill: var(--muted); }
+  @media (max-width: 480px) { .ringlab, .handoff { display: none; } }
+  .fig .chart-foot { margin-top: 1rem; }
+  #recursive .split h3 { margin: 0 0 .4rem; }
+  .foot small.copy { font-size: inherit; }
 </style>
 </head>
 <body>
@@ -297,7 +324,7 @@ caption { text-align: left; color: var(--muted); font-size: 0.9375rem; padding-b
       <ul class="nav-links">
         <li><a href="#top">Home</a></li>
         <li><a href="#product">Product</a></li>
-        <li><a href="#results">Results</a></li>
+        <li><a href="#how">How it works</a></li>
         <li><a href="#contact">Contact</a></li>
       </ul>
     </nav>
@@ -317,7 +344,7 @@ caption { text-align: left; color: var(--muted); font-size: 0.9375rem; padding-b
     <p class="lead">Give HELIX a scientific task, its data and a scoring rule, and it runs the research loop end to end: it proposes approaches, builds and trains them, scores them for real, keeps what works, and audits its own results before it reports back.</p>
     <div class="cta-row">
       <a class="btn btn-primary" href="#contact" data-cta="primary">Request early access</a>
-      <a class="btn btn-secondary" href="#results">See the results</a>
+      <a class="btn btn-secondary" href="#how">See how it works</a>
     </div>
     <p class="hero-note">Model-agnostic. Runs on Claude today and on open-weight models such as DeepSeek.</p>
   </div>
@@ -350,127 +377,102 @@ caption { text-align: left; color: var(--muted); font-size: 0.9375rem; padding-b
 </section>
 
 <!-- ============ Results ============ -->
-<section class="section" id="results">
+<!-- ============ Integrity ============ -->
+<section class="section alt" id="how">
   <div class="container">
-    <p class="eyebrow">Results</p>
-    <h2 class="prose">NatureBench-25, September 2026</h2>
-    <p class="lead prose">25 scientific tasks, one cold run per task at the track's 4-hour reference budget. HELIX ran on Claude Opus 5. The two comparators below use the same 25 tasks and the same base model.</p>
-    <div class="disclosure" role="note">
-      <strong>Self-reported figures.</strong> Submitted to the NatureBench maintainers for review in September 2026; not yet on the public leaderboard. Numbers on this page are ours until the maintainers publish theirs.
-    </div>
+    <p class="eyebrow">How it works</p>
+    <h2 class="prose">Two loops, one of which improves the other.</h2>
+    <p class="lead prose">Most agents run a single loop: try something, look at the result, try again.
+      HELIX runs two, and the outer one is what makes the system compound.</p>
 
-    <div class="kpis">
-      <div class="card kpi">
-        <div class="kpi-label">Match-SOTA rate</div>
-        <div class="kpi-value">72%</div>
-        <div class="kpi-sub">18 of 25 tasks met the track's Match-SOTA criterion</div>
-        <div class="kpi-delta"><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M6 1l5 6H1z" fill="currentColor"/></svg>+4 pts <span>vs the Claude Code entry (68%)</span></div>
+    <div class="loops">
+      <div class="card loop-card">
+        <h3>The outer loop &mdash; the science</h3>
+        <p class="loop-verbs"><span>gather evidence</span><span>diagnose</span><span>hypothesise</span><span>validate</span><span>remember</span></p>
+        <p>It spans runs. It asks what is actually limiting progress, forms a view about why, tests that
+          view against measurement rather than intuition, and keeps what it learned.</p>
       </div>
-      <div class="card kpi">
-        <div class="kpi-label">Surpass-SOTA rate</div>
-        <div class="kpi-value">28%</div>
-        <div class="kpi-sub">7 of 25 tasks met the track's Surpass-SOTA criterion</div>
-        <div class="kpi-delta"><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M6 1l5 6H1z" fill="currentColor"/></svg>+4 pts <span>vs the AIBuildAI 2.5 entry (24%)</span></div>
-      </div>
-      <div class="card kpi">
-        <div class="kpi-label">Head-to-head vs Claude Code</div>
-        <div class="kpi-value">12 – 6 – 7</div>
-        <div class="kpi-sub">wins – ties – losses, task by task</div>
-      </div>
-      <div class="card kpi">
-        <div class="kpi-label">Head-to-head vs AIBuildAI 2.5</div>
-        <div class="kpi-value">23 – 1 – 1</div>
-        <div class="kpi-sub">wins – ties – losses, task by task</div>
+      <div class="card loop-card">
+        <h3>The inner loop &mdash; the engineering</h3>
+        <p class="loop-verbs"><span>select</span><span>generate</span><span>evaluate</span><span>keep the winners</span></p>
+        <p>It runs inside a single problem. Candidates are built and scored against the real scoring rule,
+          not a proxy, and only measured winners survive.</p>
       </div>
     </div>
 
-    <figure class="card chart" aria-labelledby="chartTitle" aria-describedby="chartDesc">
-      <div class="chart-head">
-        <div>
-          <div class="chart-title" id="chartTitle">Share of the 25 tasks, by entry</div>
-          <div class="chart-sub" id="chartDesc">Same tasks, same base model. Higher is better; values are per cent of 25 tasks.</div>
-        </div>
-        <ul class="legend" aria-label="Series">
-          <li><span class="swatch s1" aria-hidden="true"></span>HELIX · Claude Opus 5</li>
-          <li><span class="swatch s2" aria-hidden="true"></span>Claude Code (official entry)</li>
-          <li><span class="swatch s3" aria-hidden="true"></span>AIBuildAI 2.5</li>
-        </ul>
-      </div>
-
-      <div class="facets">
-        <div class="facet">
-          <div class="facet-title">Match-SOTA <small>share of the 25 tasks</small></div>
-          <div class="plot" role="list">
-            <div class="row is-hero" role="listitem" tabindex="0" data-series="HELIX" data-facet="Match-SOTA" data-n="18" aria-label="HELIX, Match-SOTA: 72 per cent, 18 of 25 tasks" style="--v:72">
-              <span class="name">HELIX</span><span class="lane"><span class="bar s1"></span><span class="val">72%</span></span><span></span>
-            </div>
-            <div class="row" role="listitem" tabindex="0" data-series="Claude Code" data-facet="Match-SOTA" aria-label="Claude Code, Match-SOTA: 68 per cent" style="--v:68">
-              <span class="name">Claude Code</span><span class="lane"><span class="bar s2"></span><span class="val">68%</span></span><span></span>
-            </div>
-            <div class="row" role="listitem" tabindex="0" data-series="AIBuildAI 2.5" data-facet="Match-SOTA" data-n="16" aria-label="AIBuildAI 2.5, Match-SOTA: 64 per cent, 16 of 25 tasks" style="--v:64">
-              <span class="name">AIBuildAI 2.5</span><span class="lane"><span class="bar s3"></span><span class="val">64%</span></span><span></span>
-            </div>
-          </div>
-          <div class="axis" aria-hidden="true"><div class="ticks"><span style="left:0">0</span><span style="left:25%">25</span><span style="left:50%">50</span><span style="left:75%">75</span><span style="left:100%">100%</span></div></div>
-        </div>
-
-        <div class="facet">
-          <div class="facet-title">Surpass-SOTA <small>share of the 25 tasks</small></div>
-          <div class="plot" role="list">
-            <div class="row is-hero" role="listitem" tabindex="0" data-series="HELIX" data-facet="Surpass-SOTA" data-n="7" aria-label="HELIX, Surpass-SOTA: 28 per cent, 7 of 25 tasks" style="--v:28">
-              <span class="name">HELIX</span><span class="lane"><span class="bar s1"></span><span class="val">28%</span></span><span></span>
-            </div>
-            <div class="row" role="listitem" tabindex="0" data-series="Claude Code" data-facet="Surpass-SOTA" aria-label="Claude Code, Surpass-SOTA: 20 per cent" style="--v:20">
-              <span class="name">Claude Code</span><span class="lane"><span class="bar s2"></span><span class="val">20%</span></span><span></span>
-            </div>
-            <div class="row" role="listitem" tabindex="0" data-series="AIBuildAI 2.5" data-facet="Surpass-SOTA" data-n="6" aria-label="AIBuildAI 2.5, Surpass-SOTA: 24 per cent, 6 of 25 tasks" style="--v:24">
-              <span class="name">AIBuildAI 2.5</span><span class="lane"><span class="bar s3"></span><span class="val">24%</span></span><span></span>
-            </div>
-          </div>
-          <div class="axis" aria-hidden="true"><div class="ticks"><span style="left:0">0</span><span style="left:25%">25</span><span style="left:50%">50</span><span style="left:75%">75</span><span style="left:100%">100%</span></div></div>
-        </div>
-      </div>
-
-      <figcaption class="chart-foot">Match-SOTA and Surpass-SOTA are the track's own criteria, as defined by NatureBench. Comparator figures are the Claude Code and AIBuildAI 2.5 entries on the same 25 tasks and base model; task counts are shown where the entry reports them.</figcaption>
-
-      <details class="tableview">
-        <summary>View the data as a table</summary>
-        <div class="table-wrap">
-          <table>
-            <caption>NatureBench-25, September 2026, same 25 tasks and base model. Self-reported; under review.</caption>
-            <thead>
-              <tr><th scope="col">Entry</th><th scope="col" class="num">Match-SOTA</th><th scope="col" class="num">Surpass-SOTA</th><th scope="col" class="num">HELIX head-to-head (W – T – L)</th></tr>
-            </thead>
-            <tbody>
-              <tr><th scope="row">HELIX · Claude Opus 5</th><td class="num">72% (18/25)</td><td class="num">28% (7/25)</td><td class="num">—</td></tr>
-              <tr><th scope="row">Claude Code (official entry)</th><td class="num">68%</td><td class="num">20%</td><td class="num">12 – 6 – 7</td></tr>
-              <tr><th scope="row">AIBuildAI 2.5</th><td class="num">64% (16/25)</td><td class="num">24% (6/25)</td><td class="num">23 – 1 – 1</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </details>
+    <figure class="fig">
+      <svg class="loopsvg" viewBox="0 0 560 300" role="img" aria-labelledby="loopttl loopdesc">
+        <title id="loopttl">Two nested loops joined by two hand-offs</title>
+        <desc id="loopdesc">An outer science loop and an inner engineering loop. The outer loop passes
+          a task brief down to the inner loop; the inner loop passes validated evidence back up.</desc>
+        <ellipse cx="280" cy="150" rx="250" ry="128" class="ring outer"/>
+        <ellipse cx="280" cy="150" rx="132" ry="66" class="ring inner"/>
+        <text x="280" y="34" class="ringlab lab-outer">outer loop &mdash; the science</text>
+        <text x="280" y="150" class="ringlab lab-inner">inner loop &mdash; the engineering</text>
+        <path d="M236 84 L236 116" class="arrow"/><path d="M236 116 l-5 -9 h10 z" class="arrowhead"/>
+        <text x="228" y="104" class="handoff" text-anchor="end">task brief</text>
+        <path d="M324 216 L324 184" class="arrow"/><path d="M324 184 l-5 9 h10 z" class="arrowhead"/>
+        <text x="332" y="206" class="handoff">validated evidence</text>
+      </svg>
+      <figcaption class="chart-foot prose">The outer loop hands down the problem, how answers are scored and
+        how much effort to spend. The inner loop hands back what won, what failed, and how far the measured
+        result diverged from what was expected &mdash; which is exactly the material the outer loop learns from.</figcaption>
     </figure>
   </div>
 </section>
 
-<!-- ============ Integrity ============ -->
+<section class="section" id="recursive">
+  <div class="container">
+    <p class="eyebrow">Recursive self-improvement</p>
+    <h2 class="prose">The system doing the research is the system being improved by it.</h2>
+    <div class="split">
+      <div>
+        <h3>Within a run</h3>
+        <p>Every measured result changes what is tried next. Progress inside a problem is driven by
+          evidence the run produced minutes earlier, not by a plan written before anything was known.</p>
+      </div>
+      <div>
+        <h3>Across runs</h3>
+        <p>What the outer loop learned about a class of problems &mdash; which approaches pay off, which
+          dead ends to skip, what a suspicious result looks like &mdash; carries into the next problem.
+          The harness is better at the second problem than it was at the first.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section alt" id="heuristics">
+  <div class="container">
+    <p class="eyebrow">Heuristic learning</p>
+    <h2 class="prose">It learns rules of thumb, not just models.</h2>
+    <p class="lead prose">A model fitted to one dataset is worth something once. A heuristic &mdash; a
+      compact, reusable judgement distilled from experience &mdash; is worth something every time a
+      similar problem appears.</p>
+    <div class="tiles">
+      <div class="card"><h3>What to try first</h3><p>Which family of approaches tends to pay off for a
+        given shape of data, and which is usually a waste of the first hour.</p></div>
+      <div class="card"><h3>What to distrust</h3><p>When a result is too good to be true, and which
+        quirks of a dataset tend to produce numbers that will not survive scrutiny.</p></div>
+      <div class="card"><h3>When to stop</h3><p>When tuning has stopped paying and the honest move is to
+        change direction rather than push the same idea further.</p></div>
+    </div>
+    <p class="prose">These are retrieved when they are relevant, rather than carried along as
+      ever-growing context. The agent starts each problem informed, not burdened.</p>
+  </div>
+</section>
+
 <section class="section" id="integrity">
   <div class="container">
     <p class="eyebrow">Integrity</p>
     <h2 class="prose">We audit ourselves before we report.</h2>
+      <p class="lead prose">A research system that only reports its wins is not a research system. Before HELIX reports anything, it goes back over its own work and asks whether each result was really earned: whether it came from a method genuinely fitted to the problem, or leaned on something it should not have.</p>
+      <p class="prose">Results that cannot be cleared are withheld — including its own best ones. That has happened, and it is the point: an agent that cannot rule against itself cannot be trusted when it rules in its own favour.</p>
+      <p class="prose">Every score HELIX reports was measured against the real scoring rule for the problem, never estimated.</p>
+
     <div class="split">
       <div class="prose stack">
-        <p class="lead">A research system that only reports its wins is not a research system. Before the NatureBench-25 figures above were submitted, HELIX's own audit went back over every result it had produced.</p>
-        <p>It excluded seven candidate results it had produced across its runs, including its single highest score, because they could not be cleared to the standard we hold ourselves to. The figures above are over all 25 tasks and were computed after those exclusions, not before them.</p>
         <ul class="checklist">
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20 6L9 17l-5-5"/></svg><span>Every reported score was measured against the task's real scoring rule, not estimated.</span></li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20 6L9 17l-5-5"/></svg><span>Results that failed the audit were withdrawn before submission, regardless of how good they looked.</span></li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20 6L9 17l-5-5"/></svg><span>The remaining figures were handed to the benchmark maintainers for independent review.</span></li>
-        </ul>
-      </div>
-      <div class="card figure-block">
-        <div class="figure-big">7 withdrawn</div>
-        <p class="figure-cap">of the results HELIX produced on NatureBench-25 were excluded by its own audit before submission, including its single highest score.</p>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
       </div>
     </div>
   </div>
@@ -481,7 +483,7 @@ caption { text-align: left; color: var(--muted); font-size: 0.9375rem; padding-b
   <div class="container">
     <p class="eyebrow">Models</p>
     <h2 class="prose">Bring the model you trust.</h2>
-    <p class="lead prose">HELIX is model-agnostic. The NatureBench-25 results above were produced with Claude Opus 5; it also runs on open-weight models such as DeepSeek.</p>
+    <p class="lead prose">HELIX is model-agnostic. It runs on frontier models such as Claude and on open-weight models such as DeepSeek.</p>
     <div class="model-row" aria-label="Supported model families">
       <span class="pill">Claude</span>
       <span class="pill">DeepSeek</span>
@@ -502,7 +504,7 @@ caption { text-align: left; color: var(--muted); font-size: 0.9375rem; padding-b
       </div>
       <div class="contact-actions">
         <a class="btn btn-primary" href="#contact" id="contactBtn" data-cta="primary">Request early access</a>
-        <a class="btn btn-secondary" href="#results">Review the results</a>
+        <a class="btn btn-secondary" href="#heuristics">What it learns</a>
       </div>
     </div>
   </div>
@@ -516,7 +518,7 @@ caption { text-align: left; color: var(--muted); font-size: 0.9375rem; padding-b
     <ul>
       <li><a href="#top">Home</a></li>
       <li><a href="#product">Product</a></li>
-      <li><a href="#results">Results</a></li>
+      <li><a href="#how">How it works</a></li>
       <li><a href="#contact">Contact</a></li>
     </ul>
   </div>
@@ -566,48 +568,6 @@ const SITE = { contact: "yang_xinyu@a-star.edu.sg" };
   }
 
   /* ----- Chart hover / focus tooltip (enhances; every value is also a direct label and in the table) ----- */
-  var tip = doc.getElementById("tip");
-  var tipVal = doc.getElementById("tipVal");
-  var tipKey = doc.getElementById("tipKey");
-  var tipLabel = doc.getElementById("tipLabel");
-  var rows = doc.querySelectorAll(".plot .row");
-  var seriesClass = { "HELIX": "s1", "Claude Code": "s2", "AIBuildAI 2.5": "s3" };
-
-  function fill(row) {
-    var v = row.style.getPropertyValue("--v").trim();
-    var n = row.getAttribute("data-n");
-    var s = row.getAttribute("data-series");
-    var f = row.getAttribute("data-facet");
-    tipVal.textContent = n ? v + "%  (" + n + " of 25 tasks)" : v + "%";
-    tipLabel.textContent = s + " · " + f;
-    tipKey.className = seriesClass[s] || "";
-  }
-  function place(x, y) {
-    var pad = 12;
-    var w = tip.offsetWidth, h = tip.offsetHeight;
-    var vw = window.innerWidth, vh = window.innerHeight;
-    var left = x + pad, top = y + pad;
-    if (left + w > vw - 8) { left = Math.max(8, x - w - pad); }
-    if (top + h > vh - 8) { top = Math.max(8, y - h - pad); }
-    tip.style.left = left + "px";
-    tip.style.top = top + "px";
-  }
-  function show(row) { fill(row); tip.classList.add("show"); tip.setAttribute("aria-hidden", "false"); }
-  function hide() { tip.classList.remove("show"); tip.setAttribute("aria-hidden", "true"); }
-
-  for (var r = 0; r < rows.length; r++) {
-    (function (row) {
-      row.addEventListener("pointerenter", function (e) { show(row); place(e.clientX, e.clientY); });
-      row.addEventListener("pointermove", function (e) { place(e.clientX, e.clientY); });
-      row.addEventListener("pointerleave", hide);
-      row.addEventListener("focus", function () {
-        show(row);
-        var b = row.querySelector(".bar").getBoundingClientRect();
-        place(b.left + Math.min(b.width, 40), b.bottom);
-      });
-      row.addEventListener("blur", hide);
-    })(rows[r]);
-  }
   doc.addEventListener("keydown", function (e) { if (e.key === "Escape") { hide(); } });
   window.addEventListener("scroll", hide, { passive: true });
 })();
