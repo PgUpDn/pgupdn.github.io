@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="color-scheme" content="light dark">
+<meta name="color-scheme" content="light">
 <title>HELIX — A research harness that gets better at research</title>
 <meta name="description" content="HELIX runs the research loop end to end: it proposes approaches, builds and trains them, scores them for real, keeps what works, and audits its own results before reporting.">
 <meta name="referrer" content="no-referrer">
@@ -30,7 +30,7 @@
   --series-3: #9d9b92;   /* comparator, lighter gray */
   --shadow: 0 1px 2px rgba(11, 11, 11, 0.04), 0 8px 24px rgba(11, 11, 11, 0.05);
 }
-@media (prefers-color-scheme: dark) {
+@media (prefers-color-scheme: dark) and (min-width: 999999px) {
   :root:where(:not([data-theme="light"])) {
     color-scheme: dark;
     --page: #0d0d0d;
@@ -148,7 +148,7 @@ h2 { font-size: clamp(1.5rem, 1.1rem + 1.6vw, 2.25rem); font-weight: 600; }
 }
 :root[data-theme="dark"] .theme-btn .sun { display: none; }
 :root[data-theme="dark"] .theme-btn .moon { display: block; }
-@media (prefers-color-scheme: dark) {
+@media (prefers-color-scheme: dark) and (min-width: 999999px) {
   :root:where(:not([data-theme="light"])) .theme-btn .sun { display: none; }
   :root:where(:not([data-theme="light"])) .theme-btn .moon { display: block; }
 }
@@ -628,7 +628,7 @@ caption { text-align: left; color: var(--muted); font-size: 0.9375rem; padding-b
     <div class="contact-panel" id="contactPanel">
       <div class="contact-who">
         <p class="contact-name">Dr. Xinyu Yang</p>
-        <p class="contact-org">Institute of Advanced Intelligence and Computing (IAIC), A*STAR<br>1 Fusionopolis Way, Singapore&nbsp;138632</p>
+        <p class="contact-org">Institute of Advanced Intelligence and Computing (IAIC)<br>Agency for Science, Technology and Research (A*STAR)<br>1 Fusionopolis Way, Singapore 138632, Republic of Singapore</p>
       </div>
       <div class="contact-act">
         <a class="btn btn-primary btn-mail" id="contactAddr" href="mailto:yang_xinyu@a-star.edu.sg?subject=HELIX">yang_xinyu@a-star.edu.sg</a>
@@ -694,7 +694,7 @@ const SITE = { contact: "yang_xinyu@a-star.edu.sg" };
   function currentTheme() {
     var t = root.getAttribute("data-theme");
     if (t === "dark" || t === "light") { return t; }
-    return (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) ? "dark" : "light";
+    return "light"; /* default is light; dark only when the visitor chooses it */
   }
   if (btn) {
     btn.addEventListener("click", function () {
