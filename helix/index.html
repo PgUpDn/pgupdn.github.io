@@ -371,18 +371,33 @@ caption { text-align: left; color: var(--muted); font-size: 0.9375rem; padding-b
     .js .reveal { opacity: 1; transform: none; transition: none; }
     .spark { display: none; }
   }
-  /* contact: the address is the focal point, no box, no buttons */
-  #contact .lead { max-width: 40ch; }
-  .mailbig { margin-top: 2.8rem; text-align: center; }
-  .mailbig a { display: inline-block; }
-  .mailbig a { font-size: clamp(1.45rem, .9rem + 2.6vw, 2.85rem); font-weight: 600;
-    letter-spacing: -0.028em; color: var(--accent); text-decoration: none;
     border-bottom: 2px solid color-mix(in oklab, var(--accent) 28%, transparent);
     padding-bottom: .12em; transition: border-color .25s ease, opacity .25s ease; }
-  .mailbig a:hover { border-bottom-color: var(--accent); }
-  .mailbig a:focus-visible { outline: 2px solid var(--accent); outline-offset: 6px; border-radius: 4px; }
   .mailnote { margin-top: 2.2rem; font-size: .9375rem; color: var(--muted);
     max-width: 46ch; margin-inline: auto; text-align: center; }
+
+  /* ---------- Contact (v3): a quiet card, address at body size ---------- */
+  .contact-wrap { text-align: center; }
+  .contact-wrap .eyebrow, .contact-wrap h2, .contact-wrap .lead { margin-inline: auto; }
+  #contact .lead { max-width: 44ch; }
+  .contact-panel { margin: 2.4rem auto 0; max-width: 680px; padding: clamp(1.4rem, 2.6vw, 2.1rem) clamp(1.4rem, 3vw, 2.4rem);
+    border: 1px solid var(--border); border-radius: 22px; background: var(--surface);
+    display: grid; grid-template-columns: 1fr auto; gap: 1.25rem 2rem; align-items: center; text-align: left; }
+  .contact-name { margin: 0; font-weight: 600; font-size: 1.125rem; letter-spacing: -0.01em; }
+  .contact-org { margin: .35rem 0 0; color: var(--muted); font-size: .9375rem; line-height: 1.5; }
+  .contact-act { display: flex; flex-direction: column; align-items: stretch; gap: .6rem; min-width: 15.5rem; }
+  .btn-mail { font-size: 1rem; font-weight: 600; letter-spacing: 0; justify-content: center; white-space: nowrap; }
+  .btn-ghost { appearance: none; border: 1px solid var(--border); background: transparent; color: var(--text-2);
+    border-radius: 999px; padding: .55rem 1rem; font: inherit; font-size: .9375rem; cursor: pointer; min-height: 40px;
+    transition: border-color .2s ease, color .2s ease; }
+  .btn-ghost:hover { border-color: var(--accent); color: var(--text); }
+  .btn-ghost:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+  .mailnote { margin: 1.4rem auto 0; color: var(--muted); font-size: .9375rem; max-width: 52ch; }
+  @media (max-width: 700px) {
+    .contact-panel { grid-template-columns: 1fr; text-align: center; gap: 1.1rem; border-radius: 18px; }
+    .contact-act { min-width: 0; }
+    .btn-mail { white-space: normal; overflow-wrap: anywhere; }
+  }
 </style>
 <script>document.documentElement.classList.add("js");</script>
 </head>
@@ -605,13 +620,22 @@ caption { text-align: left; color: var(--muted); font-size: 0.9375rem; padding-b
 
 <!-- ============ Contact ============ -->
 <section class="section" id="contact">
-  <div class="container">
+  <div class="container contact-wrap">
     <p class="eyebrow">Contact</p>
-    <h2 class="prose">Early access</h2>
+    <h2 class="prose">Get in touch.</h2>
     <p class="lead prose" id="contactText">Tell us about the task, the data you have and how answers are
       scored, and we will be in touch.</p>
-    <p class="mailbig"><a id="contactAddr" href="mailto:yang_xinyu@a-star.edu.sg?subject=HELIX%20early%20access">yang_xinyu@a-star.edu.sg</a></p>
-    <p class="mailnote">We read every note. Research groups and teams building on their own data are both welcome.</p>
+    <div class="contact-panel" id="contactPanel">
+      <div class="contact-who">
+        <p class="contact-name">Dr. Xinyu Yang</p>
+        <p class="contact-org">A*STAR Institute of High Performance Computing<br>Singapore</p>
+      </div>
+      <div class="contact-act">
+        <a class="btn btn-primary btn-mail" id="contactAddr" href="mailto:yang_xinyu@a-star.edu.sg?subject=HELIX">yang_xinyu@a-star.edu.sg</a>
+        <button type="button" class="btn-ghost" id="copyAddr" aria-live="polite">Copy address</button>
+      </div>
+    </div>
+    <p class="mailnote">Research groups and teams building on their own data are both welcome.</p>
   </div>
 </section>
 
@@ -645,11 +669,20 @@ const SITE = { contact: "yang_xinyu@a-star.edu.sg" };
   var addrEl = doc.getElementById("contactAddr");
   var ctas = doc.querySelectorAll('[data-cta="primary"]');
   if (addr) {
-    var href = "mailto:" + addr + "?subject=" + encodeURIComponent("HELIX early access");
+    var href = "mailto:" + addr + "?subject=" + encodeURIComponent("HELIX");
     text.textContent = "Tell us about the task, the data you have and how it is scored, and we will be in touch.";
     addrEl.textContent = addr;
+    addrEl.setAttribute("href", href);
     addrEl.hidden = false;
     for (var i = 0; i < ctas.length; i++) { ctas[i].setAttribute("href", href); }
+    var copyBtn = doc.getElementById("copyAddr");
+    if (copyBtn) {
+      copyBtn.addEventListener("click", function () {
+        var done = function () { copyBtn.textContent = "Copied"; setTimeout(function () { copyBtn.textContent = "Copy address"; }, 1600); };
+        if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(addr).then(done, done); }
+        else { var ta = doc.createElement("textarea"); ta.value = addr; doc.body.appendChild(ta); ta.select(); try { doc.execCommand("copy"); } catch (e) {} doc.body.removeChild(ta); done(); }
+      });
+    }
   }
 
   /* ----- Theme toggle (dark is a selected token set, remembered locally) ----- */
